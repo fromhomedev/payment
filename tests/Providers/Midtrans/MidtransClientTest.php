@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Ziswapp\Payment\Tests\Providers\Midtrans;
 
 use Psl\Json;
@@ -20,19 +22,6 @@ use Symfony\Component\HttpClient\Response\MockResponse;
 
 final class MidtransClientTest extends TestCase
 {
-    protected function makeStubTransaction(): Transaction
-    {
-        return new Transaction([
-            'id' => \random_int(0, PHP_INT_MAX),
-            'amount' => 1000000,
-            'currency' => 'IDR',
-            'customer' => new Customer([
-                'firstName' => 'Nuradiyana',
-                'lastName' => 'Soleh'
-            ])
-        ]);
-    }
-
     public function testCanCreatePermataVirtualAccount(): void
     {
         $json = <<<JSON
@@ -53,15 +42,17 @@ final class MidtransClientTest extends TestCase
 JSON;
 
         $httpClient = new MockHttpClient([
-            new MockResponse($json)
+            new MockResponse($json),
         ], MidtransClient::SANDBOX_URL);
 
         $credentials = new Credentials(
-            (string)\getenv('SANDBOX_MIDTRANS_KEY'),
-            (string)\getenv('SANDBOX_MIDTRANS_SECRET'),
+            (string) \getenv('SANDBOX_MIDTRANS_KEY'),
+            (string) \getenv('SANDBOX_MIDTRANS_SECRET'),
         );
 
-        $client = new MidtransClient($credentials, ['isProduction' => false], null, null, $httpClient);
+        $client = new MidtransClient($credentials, [
+            'isProduction' => false,
+        ], null, null, $httpClient);
 
         $account = new VirtualAccount([
             'providerCode' => \Ziswapp\Payment\Enum\VirtualAccount::PERMATA(),
@@ -100,15 +91,17 @@ JSON;
 JSON;
 
         $httpClient = new MockHttpClient([
-            new MockResponse($json)
+            new MockResponse($json),
         ], MidtransClient::SANDBOX_URL);
 
         $credentials = new Credentials(
-            (string)\getenv('SANDBOX_MIDTRANS_KEY'),
-            (string)\getenv('SANDBOX_MIDTRANS_SECRET'),
+            (string) \getenv('SANDBOX_MIDTRANS_KEY'),
+            (string) \getenv('SANDBOX_MIDTRANS_SECRET'),
         );
 
-        $client = new MidtransClient($credentials, ['isProduction' => false], null, null, $httpClient);
+        $client = new MidtransClient($credentials, [
+            'isProduction' => false,
+        ], null, null, $httpClient);
 
         $account = new VirtualAccount([
             'providerCode' => \Ziswapp\Payment\Enum\VirtualAccount::MANDIRI(),
@@ -146,15 +139,17 @@ JSON;
 JSON;
 
         $httpClient = new MockHttpClient([
-            new MockResponse($json)
+            new MockResponse($json),
         ], MidtransClient::SANDBOX_URL);
 
         $credentials = new Credentials(
-            (string)\getenv('SANDBOX_MIDTRANS_KEY'),
-            (string)\getenv('SANDBOX_MIDTRANS_SECRET'),
+            (string) \getenv('SANDBOX_MIDTRANS_KEY'),
+            (string) \getenv('SANDBOX_MIDTRANS_SECRET'),
         );
 
-        $client = new MidtransClient($credentials, ['isProduction' => false], null, null, $httpClient);
+        $client = new MidtransClient($credentials, [
+            'isProduction' => false,
+        ], null, null, $httpClient);
 
         $account = new VirtualAccount([
             'providerCode' => \Ziswapp\Payment\Enum\VirtualAccount::BNI(),
@@ -192,15 +187,17 @@ JSON;
 JSON;
 
         $httpClient = new MockHttpClient([
-            new MockResponse($json)
+            new MockResponse($json),
         ], MidtransClient::SANDBOX_URL);
 
         $credentials = new Credentials(
-            (string)\getenv('SANDBOX_MIDTRANS_KEY'),
-            (string)\getenv('SANDBOX_MIDTRANS_SECRET'),
+            (string) \getenv('SANDBOX_MIDTRANS_KEY'),
+            (string) \getenv('SANDBOX_MIDTRANS_SECRET'),
         );
 
-        $client = new MidtransClient($credentials, ['isProduction' => false], null, null, $httpClient);
+        $client = new MidtransClient($credentials, [
+            'isProduction' => false,
+        ], null, null, $httpClient);
 
         $account = new VirtualAccount([
             'providerCode' => \Ziswapp\Payment\Enum\VirtualAccount::BNI(),
@@ -238,15 +235,17 @@ JSON;
 JSON;
 
         $httpClient = new MockHttpClient([
-            new MockResponse($json)
+            new MockResponse($json),
         ], MidtransClient::SANDBOX_URL);
 
         $credentials = new Credentials(
-            (string)\getenv('SANDBOX_MIDTRANS_KEY'),
-            (string)\getenv('SANDBOX_MIDTRANS_SECRET'),
+            (string) \getenv('SANDBOX_MIDTRANS_KEY'),
+            (string) \getenv('SANDBOX_MIDTRANS_SECRET'),
         );
 
-        $client = new MidtransClient($credentials, ['isProduction' => false], null, null, $httpClient);
+        $client = new MidtransClient($credentials, [
+            'isProduction' => false,
+        ], null, null, $httpClient);
 
         $account = new VirtualAccount([
             'providerCode' => \Ziswapp\Payment\Enum\VirtualAccount::BNI(),
@@ -304,15 +303,17 @@ JSON;
 JSON;
 
         $httpClient = new MockHttpClient([
-            new MockResponse($json)
+            new MockResponse($json),
         ], MidtransClient::SANDBOX_URL);
 
         $credentials = new Credentials(
-            (string)\getenv('SANDBOX_MIDTRANS_KEY'),
-            (string)\getenv('SANDBOX_MIDTRANS_SECRET'),
+            (string) \getenv('SANDBOX_MIDTRANS_KEY'),
+            (string) \getenv('SANDBOX_MIDTRANS_SECRET'),
         );
 
-        $client = new MidtransClient($credentials, ['isProduction' => false], null, null, $httpClient);
+        $client = new MidtransClient($credentials, [
+            'isProduction' => false,
+        ], null, null, $httpClient);
 
         $eWallet = new EWallet([
             'providerCode' => \Ziswapp\Payment\Enum\EWallet::GOPAY(),
@@ -359,15 +360,17 @@ JSON;
 JSON;
 
         $httpClient = new MockHttpClient([
-            new MockResponse($json)
+            new MockResponse($json),
         ], MidtransClient::SANDBOX_URL);
 
         $credentials = new Credentials(
-            (string)\getenv('SANDBOX_MIDTRANS_KEY'),
-            (string)\getenv('SANDBOX_MIDTRANS_SECRET'),
+            (string) \getenv('SANDBOX_MIDTRANS_KEY'),
+            (string) \getenv('SANDBOX_MIDTRANS_SECRET'),
         );
 
-        $client = new MidtransClient($credentials, ['isProduction' => false], null, null, $httpClient);
+        $client = new MidtransClient($credentials, [
+            'isProduction' => false,
+        ], null, null, $httpClient);
 
         $eWallet = new EWallet([
             'providerCode' => \Ziswapp\Payment\Enum\EWallet::QRIS(),
@@ -415,15 +418,17 @@ JSON;
 JSON;
 
         $httpClient = new MockHttpClient([
-            new MockResponse($json)
+            new MockResponse($json),
         ], MidtransClient::SANDBOX_URL);
 
         $credentials = new Credentials(
-            (string)\getenv('SANDBOX_MIDTRANS_KEY'),
-            (string)\getenv('SANDBOX_MIDTRANS_SECRET'),
+            (string) \getenv('SANDBOX_MIDTRANS_KEY'),
+            (string) \getenv('SANDBOX_MIDTRANS_SECRET'),
         );
 
-        $client = new MidtransClient($credentials, ['isProduction' => false], null, null, $httpClient);
+        $client = new MidtransClient($credentials, [
+            'isProduction' => false,
+        ], null, null, $httpClient);
 
         $eWallet = new EWallet([
             'providerCode' => \Ziswapp\Payment\Enum\EWallet::SHOPEEPAY(),
@@ -462,15 +467,17 @@ JSON;
 JSON;
 
         $httpClient = new MockHttpClient([
-            new MockResponse($json)
+            new MockResponse($json),
         ], MidtransClient::SANDBOX_URL);
 
         $credentials = new Credentials(
-            (string)\getenv('SANDBOX_MIDTRANS_KEY'),
-            (string)\getenv('SANDBOX_MIDTRANS_SECRET'),
+            (string) \getenv('SANDBOX_MIDTRANS_KEY'),
+            (string) \getenv('SANDBOX_MIDTRANS_SECRET'),
         );
 
-        $client = new MidtransClient($credentials, ['isProduction' => false], null, null, $httpClient);
+        $client = new MidtransClient($credentials, [
+            'isProduction' => false,
+        ], null, null, $httpClient);
 
         $cStore = new CStore([
             'providerCode' => \Ziswapp\Payment\Enum\CStore::ALFAMART(),
@@ -501,11 +508,13 @@ JSON;
         ], MidtransClient::SANDBOX_URL);
 
         $credentials = new Credentials(
-            (string)\getenv('SANDBOX_MIDTRANS_KEY'),
-            (string)\getenv('SANDBOX_MIDTRANS_SECRET'),
+            (string) \getenv('SANDBOX_MIDTRANS_KEY'),
+            (string) \getenv('SANDBOX_MIDTRANS_SECRET'),
         );
 
-        $client = new MidtransClient($credentials, ['isProduction' => false], null, null, $httpClient);
+        $client = new MidtransClient($credentials, [
+            'isProduction' => false,
+        ], null, null, $httpClient);
 
         $transaction = $this->makeStubTransaction();
 
@@ -521,7 +530,8 @@ JSON;
         $this->expectException(PaymentException::class);
         $this->expectExceptionMessage('Merchant cannot modify the status of the transaction');
         $eWallet = new EWallet([
-            'providerCode' => \Ziswapp\Payment\Enum\EWallet::SHOPEEPAY(), 'successUrl' => 'http://example/com',
+            'providerCode' => \Ziswapp\Payment\Enum\EWallet::SHOPEEPAY(),
+            'successUrl' => 'http://example/com',
         ]);
         $input = new EWalletInput($eWallet, $transaction);
         $client->createEWallet($input);
@@ -541,18 +551,21 @@ JSON;
         ], MidtransClient::SANDBOX_URL);
 
         $credentials = new Credentials(
-            (string)\getenv('SANDBOX_MIDTRANS_KEY'),
-            (string)\getenv('SANDBOX_MIDTRANS_SECRET'),
+            (string) \getenv('SANDBOX_MIDTRANS_KEY'),
+            (string) \getenv('SANDBOX_MIDTRANS_SECRET'),
         );
 
-        $client = new MidtransClient($credentials, ['isProduction' => false], null, null, $httpClient);
+        $client = new MidtransClient($credentials, [
+            'isProduction' => false,
+        ], null, null, $httpClient);
 
         $transaction = $this->makeStubTransaction();
 
         $this->expectException(PaymentException::class);
         $this->expectExceptionMessage('Merchant cannot modify the status of the transaction');
         $eWallet = new EWallet([
-            'providerCode' => \Ziswapp\Payment\Enum\EWallet::SHOPEEPAY(), 'successUrl' => 'http://example/com',
+            'providerCode' => \Ziswapp\Payment\Enum\EWallet::SHOPEEPAY(),
+            'successUrl' => 'http://example/com',
         ]);
         $input = new EWalletInput($eWallet, $transaction);
         $client->createEWallet($input);
@@ -572,11 +585,13 @@ JSON;
         ], MidtransClient::SANDBOX_URL);
 
         $credentials = new Credentials(
-            (string)\getenv('SANDBOX_MIDTRANS_KEY'),
-            (string)\getenv('SANDBOX_MIDTRANS_SECRET'),
+            (string) \getenv('SANDBOX_MIDTRANS_KEY'),
+            (string) \getenv('SANDBOX_MIDTRANS_SECRET'),
         );
 
-        $client = new MidtransClient($credentials, ['isProduction' => false], null, null, $httpClient);
+        $client = new MidtransClient($credentials, [
+            'isProduction' => false,
+        ], null, null, $httpClient);
 
         $transaction = $this->makeStubTransaction();
 
@@ -587,5 +602,18 @@ JSON;
         ]);
         $input = new CStoreInput($cStore, $transaction);
         $client->createConvenienceStore($input);
+    }
+
+    protected function makeStubTransaction(): Transaction
+    {
+        return new Transaction([
+            'id' => \random_int(0, PHP_INT_MAX),
+            'amount' => 1000000,
+            'currency' => 'IDR',
+            'customer' => new Customer([
+                'firstName' => 'Nuradiyana',
+                'lastName' => 'Soleh',
+            ]),
+        ]);
     }
 }

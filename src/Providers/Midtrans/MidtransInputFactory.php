@@ -58,8 +58,8 @@ final class MidtransInputFactory implements InputInterface, PaymentInputFactoryI
                 'payment_type' => 'echannel',
                 'echannel' => [
                     'bill_info1' => \sprintf('Payment for transaction %s', $input->getTransaction()->getId()),
-                    'bill_info2' => 'debt'
-                ]
+                    'bill_info2' => 'debt',
+                ],
             ]);
         } else {
             $this->params = array_merge($this->defaultParams(), [

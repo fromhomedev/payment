@@ -33,7 +33,7 @@ abstract class Client implements PaymentInterface
     protected array $configurations;
 
     /**
-     * @param array{
+     * @param array{ $credentials
      *  isProduction?: bool,
      *  appendNotification?: string,
      *  overrideNotification?: string
@@ -117,7 +117,7 @@ abstract class Client implements PaymentInterface
             'headers' => [
                 'X-Append-Notification' => $this->configurations['appendNotification'] ?? '',
                 'X-Override-Notification' => $this->configurations['overrideNotification'] ?? '',
-                'Accept' => 'application/json'
+                'Accept' => 'application/json',
             ],
         ]);
     }

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Ziswapp\Payment\Exceptions;
 
 use Symfony\Contracts\HttpClient\ResponseInterface;

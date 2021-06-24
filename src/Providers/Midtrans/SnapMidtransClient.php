@@ -9,8 +9,8 @@ use Ziswapp\Payment\Input\EWalletInput;
 use Ziswapp\Payment\Output\CStoreOutput;
 use Ziswapp\Payment\Output\EWalletOutput;
 use Ziswapp\Payment\Input\VirtualAccountInput;
-use Ziswapp\Payment\Output\VirtualAccountOutput;
 use Ziswapp\Payment\Exceptions\PaymentException;
+use Ziswapp\Payment\Output\VirtualAccountOutput;
 use Symfony\Contracts\HttpClient\ResponseInterface;
 use Ziswapp\Payment\Contracts\CredentialsInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
@@ -41,8 +41,7 @@ final class SnapMidtransClient extends Client
         ?PaymentInputFactoryInterface $inputFactory = null,
         ?OutputFactoryInterface $outputFactory = null,
         ?HttpClientInterface $httpClient = null
-    )
-    {
+    ) {
         parent::__construct(
             $credentials,
             $configurations,
@@ -64,7 +63,7 @@ final class SnapMidtransClient extends Client
         $input = SnapMidtransInputFactory::create()->fromVirtualAccountInput($input);
 
         $response = $this->createTransaction($input->requestBody());
-        
+
         if ($response->getStatusCode() !== 201) {
             throw new PaymentException($response, $response->getStatusCode(), $response->getContent(false));
         }

@@ -9,8 +9,8 @@ use Ziswapp\Payment\Input\EWalletInput;
 use Ziswapp\Payment\Output\CStoreOutput;
 use Ziswapp\Payment\Output\EWalletOutput;
 use Ziswapp\Payment\Input\VirtualAccountInput;
-use Ziswapp\Payment\Output\VirtualAccountOutput;
 use Ziswapp\Payment\Exceptions\PaymentException;
+use Ziswapp\Payment\Output\VirtualAccountOutput;
 use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\DecodingExceptionInterface;
@@ -34,8 +34,8 @@ final class MidtransClient extends Client
 
         $data = $response->toArray();
 
-        if ((int)$data['status_code'] !== 200 && (int)$data['status_code'] !== 201) {
-            throw new PaymentException($response, (int)$data['status_code'], $data['status_message']);
+        if ((int) $data['status_code'] !== 200 && (int) $data['status_code'] !== 201) {
+            throw new PaymentException($response, (int) $data['status_code'], $data['status_message']);
         }
 
         return $this->outputFactory->fromVirtualAccountArray($data);
@@ -56,8 +56,8 @@ final class MidtransClient extends Client
 
         $data = $response->toArray();
 
-        if ((int)$data['status_code'] !== 200 && (int)$data['status_code'] !== 201) {
-            throw new PaymentException($response, (int)$data['status_code'], $data['status_message']);
+        if ((int) $data['status_code'] !== 200 && (int) $data['status_code'] !== 201) {
+            throw new PaymentException($response, (int) $data['status_code'], $data['status_message']);
         }
 
         return $this->outputFactory->fromEWalletArray($data);
@@ -78,8 +78,8 @@ final class MidtransClient extends Client
 
         $data = $response->toArray();
 
-        if ((int)$data['status_code'] !== 200 && (int)$data['status_code'] !== 201) {
-            throw new PaymentException($response, (int)$data['status_code'], $data['status_message']);
+        if ((int) $data['status_code'] !== 200 && (int) $data['status_code'] !== 201) {
+            throw new PaymentException($response, (int) $data['status_code'], $data['status_message']);
         }
 
         return $this->outputFactory->fromCStoreArray($data);
