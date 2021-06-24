@@ -10,6 +10,7 @@ use Ziswapp\Payment\Output\CStoreOutput;
 use Ziswapp\Payment\Output\EWalletOutput;
 use Ziswapp\Payment\Input\VirtualAccountInput;
 use Ziswapp\Payment\Output\VirtualAccountOutput;
+use Ziswapp\Payment\Exceptions\PaymentException;
 use Symfony\Contracts\HttpClient\ResponseInterface;
 use Ziswapp\Payment\Contracts\CredentialsInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
@@ -26,7 +27,7 @@ final class SnapMidtransClient extends Client
     public const SANDBOX_URL = 'https://app.sandbox.midtrans.com';
 
     public const PRODUCTION_URL = 'https://app.midtrans.com';
-    
+
     /**
      * @param array{ $credentials
      *  isProduction?: bool,
@@ -63,6 +64,10 @@ final class SnapMidtransClient extends Client
         $input = SnapMidtransInputFactory::create()->fromVirtualAccountInput($input);
 
         $response = $this->createTransaction($input->requestBody());
+        
+        if ($response->getStatusCode() !== 201) {
+            throw new PaymentException($response, $response->getStatusCode(), $response->getContent(false));
+        }
 
         $data = $response->toArray();
 
@@ -82,6 +87,10 @@ final class SnapMidtransClient extends Client
 
         $response = $this->createTransaction($input->requestBody());
 
+        if ($response->getStatusCode() !== 201) {
+            throw new PaymentException($response, $response->getStatusCode(), $response->getContent(false));
+        }
+
         $data = $response->toArray();
 
         return $this->outputFactory->fromEWalletArray($data);
@@ -100,6 +109,10 @@ final class SnapMidtransClient extends Client
 
         $response = $this->createTransaction($input->requestBody());
 
+        if ($response->getStatusCode() !== 201) {
+            throw new PaymentException($response, $response->getStatusCode(), $response->getContent(false));
+        }
+
         $data = $response->toArray();
 
         return $this->outputFactory->fromCStoreArray($data);
@@ -107,7 +120,6 @@ final class SnapMidtransClient extends Client
 
     /**
      * @throws TransportExceptionInterface
-     * @throws ClientExceptionInterface
      * @throws RedirectionExceptionInterface
      * @throws ServerExceptionInterface
      */
