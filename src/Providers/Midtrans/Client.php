@@ -16,9 +16,9 @@ use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 
 abstract class Client implements PaymentInterface
 {
-    public const SANDBOX_URL = 'https://app.sandbox.midtrans.com';
+    public const SANDBOX_URL = 'https://api.sandbox.midtrans.com';
 
-    public const PRODUCTION_URL = 'https://app.midtrans.com';
+    public const PRODUCTION_URL = 'https://api.midtrans.com';
 
     protected bool $isProduction;
 
@@ -33,7 +33,7 @@ abstract class Client implements PaymentInterface
     protected array $configurations;
 
     /**
-     * @param array{ $credentials
+     * @param array{
      *  isProduction?: bool,
      *  appendNotification?: string,
      *  overrideNotification?: string
@@ -42,8 +42,8 @@ abstract class Client implements PaymentInterface
     public function __construct(
         CredentialsInterface $credentials,
         array $configurations,
-        ?PaymentInputFactoryInterface $inputFactory,
-        ?OutputFactoryInterface $outputFactory,
+        ?PaymentInputFactoryInterface $inputFactory = null,
+        ?OutputFactoryInterface $outputFactory = null,
         ?HttpClientInterface $httpClient = null
     ) {
         $this->credentials = $credentials;
@@ -117,6 +117,7 @@ abstract class Client implements PaymentInterface
             'headers' => [
                 'X-Append-Notification' => $this->configurations['appendNotification'] ?? '',
                 'X-Override-Notification' => $this->configurations['overrideNotification'] ?? '',
+                'Accept' => 'application/json'
             ],
         ]);
     }

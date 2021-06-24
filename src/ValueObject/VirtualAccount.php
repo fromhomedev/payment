@@ -10,7 +10,7 @@ final class VirtualAccount
 {
     private string $providerCode;
 
-    private ?string $number = null;
+    private ?string $number;
 
     private array $input = [];
 
@@ -22,7 +22,7 @@ final class VirtualAccount
         ], true)->coerce($input);
 
         $this->providerCode = $input['providerCode'];
-        $this->number = $input['number'] ?? '';
+        $this->number = $input['number'] ?? null;
 
         $this->input = $input;
     }

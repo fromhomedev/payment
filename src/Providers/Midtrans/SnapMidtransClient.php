@@ -23,6 +23,10 @@ use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
 
 final class SnapMidtransClient extends Client
 {
+    public const SANDBOX_URL = 'https://app.sandbox.midtrans.com';
+
+    public const PRODUCTION_URL = 'https://app.midtrans.com';
+    
     /**
      * @param array{ $credentials
      *  isProduction?: bool,
@@ -30,7 +34,13 @@ final class SnapMidtransClient extends Client
      *  overrideNotification?: string
      * } $configurations
      */
-    public function __construct(CredentialsInterface $credentials, array $configurations, ?PaymentInputFactoryInterface $inputFactory, ?OutputFactoryInterface $outputFactory, ?HttpClientInterface $httpClient = null)
+    public function __construct(
+        CredentialsInterface $credentials,
+        array $configurations,
+        ?PaymentInputFactoryInterface $inputFactory = null,
+        ?OutputFactoryInterface $outputFactory = null,
+        ?HttpClientInterface $httpClient = null
+    )
     {
         parent::__construct(
             $credentials,

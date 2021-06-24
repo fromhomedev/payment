@@ -97,6 +97,11 @@ final class MidtransOutputFactory implements OutputFactoryInterface
             'transaction_status' => Type\non_empty_string(),
         ], true)->coerce($data);
 
+        $webUrl = null;
+        $mobileUrl = null;
+        $qrCode = null;
+        $deeplinkUrl = null;
+
         switch ($data['payment_type']) {
             case 'qris':
                 $webUrl = null;
@@ -115,12 +120,6 @@ final class MidtransOutputFactory implements OutputFactoryInterface
                 $deeplinkUrl = $data['actions'][0]['url'];
                 $webUrl = $data['actions'][0]['url'];
                 $mobileUrl = $data['actions'][0]['url'];
-                break;
-            default:
-                $webUrl = null;
-                $mobileUrl = null;
-                $qrCode = null;
-                $deeplinkUrl = null;
                 break;
         }
 

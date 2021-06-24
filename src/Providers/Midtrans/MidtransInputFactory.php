@@ -53,15 +53,25 @@ final class MidtransInputFactory implements InputInterface, PaymentInputFactoryI
     {
         $this->setTransaction($input->getTransaction());
 
-        $this->params = array_merge($this->defaultParams(), [
-            'bank_transfer' => [
-                'bank' => VirtualAccount::midtransCode(
-                    $input->getAccount()->getProviderCode()
-                ),
-                'va_number' => $input->getAccount()->getNumber(),
-            ],
-            'payment_type' => 'bank_transfer',
-        ]);
+        if ($input->getAccount()->getProviderCode() === VirtualAccount::MANDIRI()) {
+            $this->params = array_merge($this->defaultParams(), [
+                'payment_type' => 'echannel',
+                'echannel' => [
+                    'bill_info1' => \sprintf('Payment for transaction %s', $input->getTransaction()->getId()),
+                    'bill_info2' => 'debt'
+                ]
+            ]);
+        } else {
+            $this->params = array_merge($this->defaultParams(), [
+                'bank_transfer' => [
+                    'bank' => VirtualAccount::midtransCode(
+                        $input->getAccount()->getProviderCode()
+                    ),
+                    'va_number' => $input->getAccount()->getNumber(),
+                ],
+                'payment_type' => 'bank_transfer',
+            ]);
+        }
 
         return $this;
     }
