@@ -107,4 +107,9 @@ final class Customer
     {
         return $this->input;
     }
+
+    public function getName(): string
+    {
+        return \sprintf('%s %s', $this->getFirstName(), $this->getLastName());
+    }
 }

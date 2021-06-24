@@ -8,7 +8,6 @@ use Ziswapp\Payment\Enum\EWallet;
 use Ziswapp\Payment\Input\CStoreInput;
 use Ziswapp\Payment\Input\EWalletInput;
 use Ziswapp\Payment\Enum\VirtualAccount;
-use Ziswapp\Payment\ValueObject\Customer;
 use Ziswapp\Payment\Contracts\InputInterface;
 use Ziswapp\Payment\Input\VirtualAccountInput;
 use Ziswapp\Payment\Contracts\PaymentInputFactoryInterface;
@@ -28,22 +27,28 @@ final class XenditInputFactory implements InputInterface, PaymentInputFactoryInt
 
     public function fromCStoreInput(CStoreInput $input): self
     {
-        return self::create();
+        $customer = $input->getTransaction()->getCustomer();
+
+        $this->params = [
+            'external_id' => $input->getTransaction()->getId(),
+            'name' => $customer?->getName(),
+            'retail_outlet_name' => $input->getCStore()->getProviderCode(),
+            'expected_amount' => $input->getTransaction()->getAmount(),
+        ];
+
+        return $this;
     }
 
     public function fromVirtualAccountInput(VirtualAccountInput $input): self
     {
-        /** @var Customer|null $customer */
         $customer = $input->getTransaction()->getCustomer();
-
-        $name = $customer ? \sprintf('%s %s', $customer->getFirstName(), $customer->getLastName()) : 'No Name';
 
         $this->params = [
             'external_id' => $input->getTransaction()->getId(),
             'bank_code' => VirtualAccount::xenditCode(
                 $input->getAccount()->getProviderCode()
             ),
-            'name' => $name,
+            'name' => $customer?->getName(),
             'virtual_account_number' => $input->getAccount()->getNumber(),
             'suggested_amount' => $input->getTransaction()->getAmount(),
             'expected_amount' => $input->getTransaction()->getAmount(),
