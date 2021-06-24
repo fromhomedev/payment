@@ -1,0 +1,56 @@
+{
+    "name": "ziswapp/payment",
+    "description": "Payment system from Ziswapp",
+    "license": "MIT",
+    "require": {
+        "php": "^8.0",
+        "ext-json": "*",
+        "azjezz/psl": "^1.7",
+        "myclabs/php-enum": "^1.8",
+        "symfony/http-client": "^5.3",
+        "symfony/http-client-contracts": "^2.4"
+    },
+    "require-dev": {
+        "mockery/mockery": "^1.4",
+        "php-standard-library/psalm-plugin": "^1.1",
+        "phpunit/phpunit": "^9.5",
+        "symplify/easy-coding-standard": "^9.2",
+        "vimeo/psalm": "^4.6"
+    },
+    "autoload": {
+        "psr-4": {
+            "Ziswapp\\Payment\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Ziswapp\\Payment\\Tests\\": "tests/"
+        }
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-main": "1.0.x-dev"
+        },
+        "laravel": {
+            "providers": [
+            ]
+        }
+    },
+    "scripts": {
+        "ecs": "ecs check",
+        "ecs-fix": "ecs check --fix",
+        "psalm": "psalm",
+        "test": "phpunit",
+        "test-local": "phpunit -c phpunit.local.xml --stop-on-failure",
+        "check-local": [
+            "@ecs-fix",
+            "@psalm",
+            "@test-local"
+        ]
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}
