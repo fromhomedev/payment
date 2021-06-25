@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Ziswapp\Payment\Providers\Xendit;
 
-use BadMethodCallException;
 use Ziswapp\Payment\Enum\CStore;
 use Ziswapp\Payment\Enum\EWallet;
 use Ziswapp\Payment\Input\CStoreInput;
 use Ziswapp\Payment\Input\EWalletInput;
 use Ziswapp\Payment\Enum\VirtualAccount;
+use Ziswapp\Payment\Output\CStoreOutput;
 use Ziswapp\Payment\Output\EWalletOutput;
 use Ziswapp\Payment\Input\CheckStatusInput;
 use Symfony\Component\HttpClient\HttpClient;
@@ -52,7 +52,8 @@ final class XenditClient implements PaymentInterface, PaymentOperationInterface
         ?PaymentInputFactoryInterface $inputFactory,
         ?OutputFactoryInterface $outputFactory,
         ?HttpClientInterface $httpClient = null
-    ) {
+    )
+    {
         $this->setConfigurations($configurations);
 
         $this->httpClient = $httpClient ?: HttpClient::createForBaseUri('https://api.xendit.co', [
@@ -110,9 +111,22 @@ final class XenditClient implements PaymentInterface, PaymentOperationInterface
         return $this->outputFactory->fromEWalletArray($data);
     }
 
-    public function createConvenienceStore(CStoreInput $input): void
+    /**
+     * @throws ClientExceptionInterface
+     * @throws DecodingExceptionInterface
+     * @throws RedirectionExceptionInterface
+     * @throws ServerExceptionInterface
+     * @throws TransportExceptionInterface
+     */
+    public function createConvenienceStore(CStoreInput $input): CStoreOutput
     {
-        throw new BadMethodCallException('Not implemented yet');
+        $input = $this->inputFactory->fromCStoreInput($input);
+
+        $response = $this->executeRequest('POST', '/fixed_payment_code', [], $input->requestBody());
+
+        $data = $response->toArray();
+
+        return $this->outputFactory->fromCStoreArray($data);
     }
 
     /**
