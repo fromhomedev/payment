@@ -8,6 +8,9 @@ use Ziswapp\Payment\Input\CStoreInput;
 use Ziswapp\Payment\Input\EWalletInput;
 use Ziswapp\Payment\Output\CStoreOutput;
 use Ziswapp\Payment\Output\EWalletOutput;
+use Ziswapp\Payment\Input\CheckStatusInput;
+use Ziswapp\Payment\Input\CancelPaymentInput;
+use Ziswapp\Payment\Output\CheckStatusOutput;
 use Ziswapp\Payment\Input\VirtualAccountInput;
 use Ziswapp\Payment\Exceptions\PaymentException;
 use Ziswapp\Payment\Output\VirtualAccountOutput;
@@ -28,13 +31,6 @@ final class SnapMidtransClient extends Client
 
     public const PRODUCTION_URL = 'https://app.midtrans.com';
 
-    /**
-     * @param array{ $credentials
-     *  isProduction?: bool,
-     *  appendNotification?: string,
-     *  overrideNotification?: string
-     * } $configurations
-     */
     public function __construct(
         CredentialsInterface $credentials,
         array $configurations,
@@ -118,6 +114,34 @@ final class SnapMidtransClient extends Client
     }
 
     /**
+     * @throws ClientExceptionInterface
+     * @throws DecodingExceptionInterface
+     * @throws RedirectionExceptionInterface
+     * @throws ServerExceptionInterface
+     * @throws TransportExceptionInterface
+     */
+    public function status(CheckStatusInput $input): CheckStatusOutput
+    {
+        $client = $this->makeMidtransClient();
+
+        return $client->status($input);
+    }
+
+    /**
+     * @throws ClientExceptionInterface
+     * @throws DecodingExceptionInterface
+     * @throws RedirectionExceptionInterface
+     * @throws ServerExceptionInterface
+     * @throws TransportExceptionInterface
+     */
+    public function cancel(CancelPaymentInput $input): CheckStatusOutput
+    {
+        $client = $this->makeMidtransClient();
+
+        return $client->cancel($input);
+    }
+
+    /**
      * @throws TransportExceptionInterface
      * @throws RedirectionExceptionInterface
      * @throws ServerExceptionInterface
@@ -125,5 +149,16 @@ final class SnapMidtransClient extends Client
     protected function createTransaction(array $body): ResponseInterface
     {
         return $this->executeRequest('POST', '/snap/v1/transactions', [], $body);
+    }
+
+    protected function makeMidtransClient(): MidtransClient
+    {
+        return new MidtransClient(
+            $this->credentials,
+            $this->configurations,
+            $this->inputFactory,
+            $this->outputFactory,
+            $this->httpClient
+        );
     }
 }

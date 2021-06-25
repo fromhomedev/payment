@@ -53,6 +53,12 @@ final class VirtualAccount extends Enum
         return (new self(self::MANDIRI))->getValue();
     }
 
+    public static function BNI_SYARIAH(): string
+    {
+        /** @var string */
+        return (new self(self::BNI_SYARIAH))->getValue();
+    }
+
     public static function midtransCode(string $provider): string
     {
         return match ($provider) {

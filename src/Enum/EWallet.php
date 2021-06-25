@@ -41,6 +41,24 @@ final class EWallet extends Enum
         return (new self(self::SHOPEEPAY))->getValue();
     }
 
+    public static function OVO(): string
+    {
+        /** @var string */
+        return (new self(self::OVO))->getValue();
+    }
+
+    public static function DANA(): string
+    {
+        /** @var string */
+        return (new self(self::DANA))->getValue();
+    }
+
+    public static function LINKAJA(): string
+    {
+        /** @var string */
+        return (new self(self::LINKAJA))->getValue();
+    }
+
     public static function midtransCode(string $provider): string
     {
         return match ($provider) {

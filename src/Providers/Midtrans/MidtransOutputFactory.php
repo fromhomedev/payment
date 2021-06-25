@@ -7,6 +7,7 @@ namespace Ziswapp\Payment\Providers\Midtrans;
 use Psl\Type;
 use Ziswapp\Payment\Output\CStoreOutput;
 use Ziswapp\Payment\Output\EWalletOutput;
+use Ziswapp\Payment\Output\CheckStatusOutput;
 use Ziswapp\Payment\Output\VirtualAccountOutput;
 use Ziswapp\Payment\Contracts\OutputFactoryInterface;
 
@@ -19,6 +20,20 @@ final class MidtransOutputFactory implements OutputFactoryInterface
     public static function create(): self
     {
         return new self();
+    }
+
+    public function fromStatusArray(array $data): CheckStatusOutput
+    {
+        $data = Type\shape([
+            'transaction_id' => Type\non_empty_string(),
+            'transaction_status' => Type\non_empty_string(),
+        ], true)->coerce($data);
+
+        return CheckStatusOutput::create(
+            $data['transaction_id'],
+            $data['transaction_status'],
+            $data
+        );
     }
 
     public function fromVirtualAccountArray(array $data): VirtualAccountOutput

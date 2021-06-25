@@ -5,10 +5,16 @@ declare(strict_types=1);
 namespace Ziswapp\Payment\Providers\Xendit;
 
 use BadMethodCallException;
+use Ziswapp\Payment\Enum\CStore;
+use Ziswapp\Payment\Enum\EWallet;
 use Ziswapp\Payment\Input\CStoreInput;
 use Ziswapp\Payment\Input\EWalletInput;
+use Ziswapp\Payment\Enum\VirtualAccount;
 use Ziswapp\Payment\Output\EWalletOutput;
+use Ziswapp\Payment\Input\CheckStatusInput;
 use Symfony\Component\HttpClient\HttpClient;
+use Ziswapp\Payment\Input\CancelPaymentInput;
+use Ziswapp\Payment\Output\CheckStatusOutput;
 use Ziswapp\Payment\Input\VirtualAccountInput;
 use Ziswapp\Payment\Contracts\PaymentInterface;
 use Ziswapp\Payment\Output\VirtualAccountOutput;
@@ -16,6 +22,7 @@ use Symfony\Contracts\HttpClient\ResponseInterface;
 use Ziswapp\Payment\Contracts\CredentialsInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Ziswapp\Payment\Contracts\OutputFactoryInterface;
+use Ziswapp\Payment\Contracts\PaymentOperationInterface;
 use Ziswapp\Payment\Contracts\PaymentInputFactoryInterface;
 use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
@@ -23,7 +30,7 @@ use Symfony\Contracts\HttpClient\Exception\DecodingExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
 
-final class XenditClient implements PaymentInterface
+final class XenditClient implements PaymentInterface, PaymentOperationInterface
 {
     private array $configurations;
 
@@ -109,6 +116,42 @@ final class XenditClient implements PaymentInterface
     }
 
     /**
+     * @throws ClientExceptionInterface
+     * @throws DecodingExceptionInterface
+     * @throws RedirectionExceptionInterface
+     * @throws ServerExceptionInterface
+     * @throws TransportExceptionInterface
+     */
+    public function status(CheckStatusInput $input): CheckStatusOutput
+    {
+        return match ($input->getProviderCode()) {
+            EWallet::SHOPEEPAY(), EWallet::OVO(), EWallet::DANA(), EWallet::LINKAJA() => $this->statusEWallet($input),
+            VirtualAccount::BNI(), VirtualAccount::BNI_SYARIAH(), VirtualAccount::BCA(),
+            VirtualAccount::BRI(), VirtualAccount::MANDIRI(), VirtualAccount::PERMATA() => $this->statusVirtualAccount($input),
+            CStore::ALFAMART(), CStore::INDOMART() => $this->statusConvenienceStore($input),
+            default => throw new \RuntimeException('Provider code not supported'),
+        };
+    }
+
+    /**
+     * @throws ClientExceptionInterface
+     * @throws DecodingExceptionInterface
+     * @throws RedirectionExceptionInterface
+     * @throws ServerExceptionInterface
+     * @throws TransportExceptionInterface
+     */
+    public function cancel(CancelPaymentInput $input): CheckStatusOutput
+    {
+        return match ($input->getProviderCode()) {
+            EWallet::SHOPEEPAY(), EWallet::OVO(), EWallet::DANA(), EWallet::LINKAJA() => throw new \RuntimeException('Cannot cancel eWallet transaction'),
+            CStore::ALFAMART(), CStore::INDOMART() => $this->cancelConvenienceStore($input),
+            VirtualAccount::BNI(), VirtualAccount::BNI_SYARIAH(), VirtualAccount::BCA(),
+            VirtualAccount::BRI(), VirtualAccount::MANDIRI(), VirtualAccount::PERMATA() => $this->cancelVirtualAccount($input),
+            default => throw new \RuntimeException('Provider code not supported'),
+        };
+    }
+
+    /**
      * @throws TransportExceptionInterface
      */
     private function executeRequest(string $method, string $uri, array $query = [], array $params = []): ResponseInterface
@@ -130,5 +173,89 @@ final class XenditClient implements PaymentInterface
             'json' => $params,
             'headers' => $headers,
         ]);
+    }
+
+    /**
+     * @throws ClientExceptionInterface
+     * @throws DecodingExceptionInterface
+     * @throws RedirectionExceptionInterface
+     * @throws ServerExceptionInterface
+     * @throws TransportExceptionInterface
+     */
+    private function statusEWallet(CheckStatusInput $input): CheckStatusOutput
+    {
+        $response = $this->executeRequest('GET', '/ewallets/charges/' . $input->getTransaction()->getId());
+
+        $data = $response->toArray();
+
+        return $this->outputFactory->fromStatusArray($data);
+    }
+
+    /**
+     * @throws ClientExceptionInterface
+     * @throws DecodingExceptionInterface
+     * @throws RedirectionExceptionInterface
+     * @throws ServerExceptionInterface
+     * @throws TransportExceptionInterface
+     */
+    private function statusVirtualAccount(CheckStatusInput $input): CheckStatusOutput
+    {
+        $response = $this->executeRequest('GET', '/callback_virtual_accounts/' . $input->getTransaction()->getId());
+
+        $data = $response->toArray();
+
+        return $this->outputFactory->fromStatusArray($data);
+    }
+
+    /**
+     * @throws ClientExceptionInterface
+     * @throws DecodingExceptionInterface
+     * @throws RedirectionExceptionInterface
+     * @throws ServerExceptionInterface
+     * @throws TransportExceptionInterface
+     */
+    private function statusConvenienceStore(CheckStatusInput $input): CheckStatusOutput
+    {
+        $response = $this->executeRequest('GET', '/fixed_payment_code/' . $input->getTransaction()->getId());
+
+        $data = $response->toArray();
+
+        return $this->outputFactory->fromStatusArray($data);
+    }
+
+    /**
+     * @throws ClientExceptionInterface
+     * @throws DecodingExceptionInterface
+     * @throws RedirectionExceptionInterface
+     * @throws ServerExceptionInterface
+     * @throws TransportExceptionInterface
+     */
+    private function cancelVirtualAccount(CancelPaymentInput $input): CheckStatusOutput
+    {
+        $response = $this->executeRequest('PATCH', '/callback_virtual_accounts/' . $input->getTransaction()->getId(), [], [
+            'expiration_date' => '1970-01-01T00:00:00Z',
+        ]);
+
+        $data = $response->toArray();
+
+        return $this->outputFactory->fromStatusArray($data);
+    }
+
+    /**
+     * @throws ClientExceptionInterface
+     * @throws DecodingExceptionInterface
+     * @throws RedirectionExceptionInterface
+     * @throws ServerExceptionInterface
+     * @throws TransportExceptionInterface
+     */
+    private function cancelConvenienceStore(CancelPaymentInput $input): CheckStatusOutput
+    {
+        $response = $this->executeRequest('PATCH', '/fixed_payment_code/' . $input->getTransaction()->getId(), [], [
+            'expiration_date' => '1970-01-01T00:00:00Z',
+        ]);
+
+        $data = $response->toArray();
+
+        return $this->outputFactory->fromStatusArray($data);
     }
 }

@@ -7,6 +7,7 @@ namespace Ziswapp\Payment\Providers\Xendit;
 use Psl\Type;
 use Ziswapp\Payment\Output\CStoreOutput;
 use Ziswapp\Payment\Output\EWalletOutput;
+use Ziswapp\Payment\Output\CheckStatusOutput;
 use Ziswapp\Payment\Output\VirtualAccountOutput;
 use Ziswapp\Payment\Contracts\OutputFactoryInterface;
 
@@ -19,6 +20,20 @@ final class XenditOutputFactory implements OutputFactoryInterface
     public static function create(): self
     {
         return new self();
+    }
+
+    public function fromStatusArray(array $data): CheckStatusOutput
+    {
+        $data = Type\shape([
+            'id' => Type\non_empty_string(),
+            'status' => Type\non_empty_string(),
+        ], true)->coerce($data);
+
+        return CheckStatusOutput::create(
+            $data['id'],
+            $data['status'],
+            $data
+        );
     }
 
     public function fromVirtualAccountArray(array $data): VirtualAccountOutput

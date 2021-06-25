@@ -11,10 +11,11 @@ use Symfony\Contracts\HttpClient\ResponseInterface;
 use Ziswapp\Payment\Contracts\CredentialsInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Ziswapp\Payment\Contracts\OutputFactoryInterface;
+use Ziswapp\Payment\Contracts\PaymentOperationInterface;
 use Ziswapp\Payment\Contracts\PaymentInputFactoryInterface;
 use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 
-abstract class Client implements PaymentInterface
+abstract class Client implements PaymentInterface, PaymentOperationInterface
 {
     public const SANDBOX_URL = 'https://api.sandbox.midtrans.com';
 
@@ -32,13 +33,6 @@ abstract class Client implements PaymentInterface
 
     protected array $configurations;
 
-    /**
-     * @param array{ $credentials
-     *  isProduction?: bool,
-     *  appendNotification?: string,
-     *  overrideNotification?: string
-     * } $configurations
-     */
     public function __construct(
         CredentialsInterface $credentials,
         array $configurations,
@@ -83,13 +77,6 @@ abstract class Client implements PaymentInterface
         return $this->configurations;
     }
 
-    /**
-     * @param array{
-     *  isProduction?: bool,
-     *  appendNotification?: string,
-     *  overrideNotification?: string
-     * } $configurations
-     */
     public function setConfigurations(array $configurations): self
     {
         $this->configurations = Type\shape([
