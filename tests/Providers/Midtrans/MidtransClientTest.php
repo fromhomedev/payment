@@ -7,18 +7,20 @@ namespace Ziswapp\Payment\Tests\Providers\Midtrans;
 use Psl\Json;
 use PHPUnit\Framework\TestCase;
 use Ziswapp\Payment\Credentials;
-use Ziswapp\Payment\Input\CStoreInput;
-use Ziswapp\Payment\Input\EWalletInput;
 use Ziswapp\Payment\ValueObject\CStore;
 use Ziswapp\Payment\ValueObject\EWallet;
 use Ziswapp\Payment\ValueObject\Customer;
 use Ziswapp\Payment\ValueObject\Transaction;
-use Ziswapp\Payment\Input\VirtualAccountInput;
+use Ziswapp\Payment\Input\CardBinFilterInput;
+use Ziswapp\Payment\Providers\Midtrans\Client;
 use Ziswapp\Payment\ValueObject\VirtualAccount;
 use Symfony\Component\HttpClient\MockHttpClient;
 use Ziswapp\Payment\Exceptions\PaymentException;
+use Ziswapp\Payment\Input\CStoreTransactionInput;
+use Ziswapp\Payment\Input\EWalletTransactionInput;
 use Ziswapp\Payment\Providers\Midtrans\MidtransClient;
 use Symfony\Component\HttpClient\Response\MockResponse;
+use Ziswapp\Payment\Input\VirtualAccountTransactionInput;
 
 final class MidtransClientTest extends TestCase
 {
@@ -59,7 +61,7 @@ JSON;
         ]);
 
         $transaction = $this->makeStubTransaction();
-        $input = new VirtualAccountInput($account, $transaction);
+        $input = new VirtualAccountTransactionInput($account, $transaction);
 
         $output = $client->createVirtualAccount($input);
 
@@ -108,7 +110,7 @@ JSON;
         ]);
 
         $transaction = $this->makeStubTransaction();
-        $input = new VirtualAccountInput($account, $transaction);
+        $input = new VirtualAccountTransactionInput($account, $transaction);
 
         $output = $client->createVirtualAccount($input);
 
@@ -156,7 +158,7 @@ JSON;
         ]);
 
         $transaction = $this->makeStubTransaction();
-        $input = new VirtualAccountInput($account, $transaction);
+        $input = new VirtualAccountTransactionInput($account, $transaction);
 
         $output = $client->createVirtualAccount($input);
 
@@ -204,7 +206,7 @@ JSON;
         ]);
 
         $transaction = $this->makeStubTransaction();
-        $input = new VirtualAccountInput($account, $transaction);
+        $input = new VirtualAccountTransactionInput($account, $transaction);
 
         $output = $client->createVirtualAccount($input);
 
@@ -252,7 +254,7 @@ JSON;
         ]);
 
         $transaction = $this->makeStubTransaction();
-        $input = new VirtualAccountInput($account, $transaction);
+        $input = new VirtualAccountTransactionInput($account, $transaction);
 
         $output = $client->createVirtualAccount($input);
 
@@ -321,7 +323,7 @@ JSON;
         ]);
 
         $transaction = $this->makeStubTransaction();
-        $input = new EWalletInput($eWallet, $transaction);
+        $input = new EWalletTransactionInput($eWallet, $transaction);
 
         $output = $client->createEWallet($input);
 
@@ -378,7 +380,7 @@ JSON;
         ]);
 
         $transaction = $this->makeStubTransaction();
-        $input = new EWalletInput($eWallet, $transaction);
+        $input = new EWalletTransactionInput($eWallet, $transaction);
 
         $output = $client->createEWallet($input);
 
@@ -436,7 +438,7 @@ JSON;
         ]);
 
         $transaction = $this->makeStubTransaction();
-        $input = new EWalletInput($eWallet, $transaction);
+        $input = new EWalletTransactionInput($eWallet, $transaction);
 
         $output = $client->createEWallet($input);
 
@@ -485,7 +487,7 @@ JSON;
         ]);
 
         $transaction = $this->makeStubTransaction();
-        $input = new CStoreInput($cStore, $transaction);
+        $input = new CStoreTransactionInput($cStore, $transaction);
 
         $output = $client->createConvenienceStore($input);
 
@@ -524,7 +526,7 @@ JSON;
         $account = new VirtualAccount([
             'providerCode' => \Ziswapp\Payment\Enum\VirtualAccount::BNI(),
         ]);
-        $input = new VirtualAccountInput($account, $transaction);
+        $input = new VirtualAccountTransactionInput($account, $transaction);
         $client->createVirtualAccount($input);
 
         $this->expectException(PaymentException::class);
@@ -533,7 +535,7 @@ JSON;
             'providerCode' => \Ziswapp\Payment\Enum\EWallet::SHOPEEPAY(),
             'successUrl' => 'http://example/com',
         ]);
-        $input = new EWalletInput($eWallet, $transaction);
+        $input = new EWalletTransactionInput($eWallet, $transaction);
         $client->createEWallet($input);
     }
 
@@ -567,7 +569,7 @@ JSON;
             'providerCode' => \Ziswapp\Payment\Enum\EWallet::SHOPEEPAY(),
             'successUrl' => 'http://example/com',
         ]);
-        $input = new EWalletInput($eWallet, $transaction);
+        $input = new EWalletTransactionInput($eWallet, $transaction);
         $client->createEWallet($input);
     }
 
@@ -600,8 +602,45 @@ JSON;
         $cStore = new CStore([
             'providerCode' => \Ziswapp\Payment\Enum\CStore::INDOMART(),
         ]);
-        $input = new CStoreInput($cStore, $transaction);
+        $input = new CStoreTransactionInput($cStore, $transaction);
         $client->createConvenienceStore($input);
+    }
+
+    public function testBinFilterRequest(): void
+    {
+        $json = <<<JSON
+{
+    "data": {
+        "country_name": "Indonesia",
+        "country_code": "id",
+        "brand": "visa",
+        "bin_type": "CREDIT",
+        "bin_class": "gold",
+        "bin": "455633",
+        "bank_code": "bca",
+        "bank": "bank central asia"
+    }
+}
+JSON;
+
+        $httpClient = new MockHttpClient([
+            new MockResponse($json),
+        ], Client::SANDBOX_URL);
+
+        $credentials = new Credentials(
+            (string) \getenv('SANDBOX_MIDTRANS_KEY'),
+            (string) \getenv('SANDBOX_MIDTRANS_SECRET'),
+        );
+
+        $client = new MidtransClient($credentials, [
+            'isProduction' => false,
+        ], null, null, $httpClient);
+
+        $input = new CardBinFilterInput('455633');
+        $output = $client->binInfo($input);
+
+        $this->assertSame('CREDIT', $output->getType());
+        $this->assertSame('455633', $output->getNumber());
     }
 
     protected function makeStubTransaction(): Transaction

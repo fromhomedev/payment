@@ -8,8 +8,10 @@ use Psl\Type;
 use Ziswapp\Payment\Output\CStoreOutput;
 use Ziswapp\Payment\Output\EWalletOutput;
 use Ziswapp\Payment\Output\CheckStatusOutput;
+use Ziswapp\Payment\Output\CardBinFilterOutput;
 use Ziswapp\Payment\Output\VirtualAccountOutput;
 use Ziswapp\Payment\Contracts\OutputFactoryInterface;
+use Ziswapp\Payment\Exceptions\MethodNotImplementedException;
 
 final class XenditOutputFactory implements OutputFactoryInterface
 {
@@ -102,5 +104,13 @@ final class XenditOutputFactory implements OutputFactoryInterface
             $data['actions']['mobile_web_checkout_url'],
             $data,
         );
+    }
+
+    /**
+     * @throws MethodNotImplementedException
+     */
+    public function fromFilterBinArray(array $data): CardBinFilterOutput
+    {
+        throw new MethodNotImplementedException(sprintf('This method `%s` not implemented', __FUNCTION__));
     }
 }

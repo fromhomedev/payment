@@ -6,7 +6,7 @@ namespace Ziswapp\Payment\Input;
 
 use Ziswapp\Payment\ValueObject\Transaction;
 
-final class CheckStatusInput extends Input
+final class CheckStatusTransactionInput extends TransactionInput
 {
     private string $providerCode;
 

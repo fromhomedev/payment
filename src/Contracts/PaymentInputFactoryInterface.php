@@ -4,15 +4,15 @@ declare(strict_types=1);
 
 namespace Ziswapp\Payment\Contracts;
 
-use Ziswapp\Payment\Input\CStoreInput;
-use Ziswapp\Payment\Input\EWalletInput;
-use Ziswapp\Payment\Input\VirtualAccountInput;
+use Ziswapp\Payment\Input\CStoreTransactionInput;
+use Ziswapp\Payment\Input\EWalletTransactionInput;
+use Ziswapp\Payment\Input\VirtualAccountTransactionInput;
 
 interface PaymentInputFactoryInterface
 {
-    public function fromCStoreInput(CStoreInput $input): InputInterface;
+    public function fromCStoreInput(CStoreTransactionInput $input): InputInterface;
 
-    public function fromVirtualAccountInput(VirtualAccountInput $input): InputInterface;
+    public function fromVirtualAccountInput(VirtualAccountTransactionInput $input): InputInterface;
 
-    public function fromEWalletInput(EWalletInput $input): InputInterface;
+    public function fromEWalletInput(EWalletTransactionInput $input): InputInterface;
 }

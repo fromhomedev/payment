@@ -4,20 +4,20 @@ declare(strict_types=1);
 
 namespace Ziswapp\Payment\Providers\Midtrans;
 
-use Ziswapp\Payment\Input\CStoreInput;
-use Ziswapp\Payment\Input\EWalletInput;
 use Ziswapp\Payment\Output\CStoreOutput;
 use Ziswapp\Payment\Output\EWalletOutput;
-use Ziswapp\Payment\Input\CheckStatusInput;
-use Ziswapp\Payment\Input\CancelPaymentInput;
 use Ziswapp\Payment\Output\CheckStatusOutput;
-use Ziswapp\Payment\Input\VirtualAccountInput;
 use Ziswapp\Payment\Exceptions\PaymentException;
 use Ziswapp\Payment\Output\VirtualAccountOutput;
+use Ziswapp\Payment\Input\CStoreTransactionInput;
+use Ziswapp\Payment\Input\EWalletTransactionInput;
 use Symfony\Contracts\HttpClient\ResponseInterface;
 use Ziswapp\Payment\Contracts\CredentialsInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Ziswapp\Payment\Contracts\OutputFactoryInterface;
+use Ziswapp\Payment\Input\CheckStatusTransactionInput;
+use Ziswapp\Payment\Input\CancelPaymentTransactionInput;
+use Ziswapp\Payment\Input\VirtualAccountTransactionInput;
 use Ziswapp\Payment\Contracts\PaymentInputFactoryInterface;
 use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
@@ -54,7 +54,7 @@ final class SnapMidtransClient extends Client
      * @throws TransportExceptionInterface
      * @throws DecodingExceptionInterface
      */
-    public function createVirtualAccount(VirtualAccountInput $input): VirtualAccountOutput
+    public function createVirtualAccount(VirtualAccountTransactionInput $input): VirtualAccountOutput
     {
         $input = SnapMidtransInputFactory::create()->fromVirtualAccountInput($input);
 
@@ -76,7 +76,7 @@ final class SnapMidtransClient extends Client
      * @throws TransportExceptionInterface
      * @throws DecodingExceptionInterface
      */
-    public function createEWallet(EWalletInput $input): EWalletOutput
+    public function createEWallet(EWalletTransactionInput $input): EWalletOutput
     {
         $input = SnapMidtransInputFactory::create()->fromEWalletInput($input);
 
@@ -98,7 +98,7 @@ final class SnapMidtransClient extends Client
      * @throws TransportExceptionInterface
      * @throws DecodingExceptionInterface
      */
-    public function createConvenienceStore(CStoreInput $input): CStoreOutput
+    public function createConvenienceStore(CStoreTransactionInput $input): CStoreOutput
     {
         $input = SnapMidtransInputFactory::create()->fromCStoreInput($input);
 
@@ -120,7 +120,7 @@ final class SnapMidtransClient extends Client
      * @throws ServerExceptionInterface
      * @throws TransportExceptionInterface
      */
-    public function status(CheckStatusInput $input): CheckStatusOutput
+    public function status(CheckStatusTransactionInput $input): CheckStatusOutput
     {
         $client = $this->makeMidtransClient();
 
@@ -134,7 +134,7 @@ final class SnapMidtransClient extends Client
      * @throws ServerExceptionInterface
      * @throws TransportExceptionInterface
      */
-    public function cancel(CancelPaymentInput $input): CheckStatusOutput
+    public function cancel(CancelPaymentTransactionInput $input): CheckStatusOutput
     {
         $client = $this->makeMidtransClient();
 

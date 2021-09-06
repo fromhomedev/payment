@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Ziswapp\Payment\Contracts;
 
-use Ziswapp\Payment\Input\CStoreInput;
-use Ziswapp\Payment\Input\EWalletInput;
-use Ziswapp\Payment\Input\VirtualAccountInput;
+use Ziswapp\Payment\Input\CStoreTransactionInput;
+use Ziswapp\Payment\Input\EWalletTransactionInput;
+use Ziswapp\Payment\Input\VirtualAccountTransactionInput;
 
 interface PaymentInterface
 {
@@ -15,15 +15,15 @@ interface PaymentInterface
     /**
      * @return mixed
      */
-    public function createVirtualAccount(VirtualAccountInput $input);
+    public function createVirtualAccount(VirtualAccountTransactionInput $input);
 
     /**
      * @return mixed
      */
-    public function createEWallet(EWalletInput $input);
+    public function createEWallet(EWalletTransactionInput $input);
 
     /**
      * @return mixed
      */
-    public function createConvenienceStore(CStoreInput $input);
+    public function createConvenienceStore(CStoreTransactionInput $input);
 }

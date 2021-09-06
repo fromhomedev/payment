@@ -6,7 +6,7 @@ namespace Ziswapp\Payment\Input;
 
 use Ziswapp\Payment\ValueObject\Transaction;
 
-abstract class Input
+abstract class TransactionInput
 {
     protected Transaction $transaction;
 

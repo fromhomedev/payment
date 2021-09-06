@@ -8,7 +8,7 @@ use Ziswapp\Payment\ValueObject\Transaction;
 use Ziswapp\Payment\ValueObject\VirtualAccount;
 use Ziswapp\Payment\Enum\VirtualAccount as Enum;
 
-final class VirtualAccountInput extends Input
+final class VirtualAccountTransactionInput extends TransactionInput
 {
     protected VirtualAccount $account;
 

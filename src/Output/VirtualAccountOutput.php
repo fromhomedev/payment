@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Ziswapp\Payment\Output;
 
-final class VirtualAccountOutput extends Output
+final class VirtualAccountOutput extends TransactionOutput
 {
     protected string $paymentNumber;
 
