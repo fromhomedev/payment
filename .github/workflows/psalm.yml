@@ -1,0 +1,38 @@
+name: Static Analysis by Psalm
+
+on: [ push, pull_request ]
+
+jobs:
+  psalm:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        php-version: [ '8.0' ]
+
+    steps:
+      - name: Running Github Checkout
+        uses: actions/checkout@v2
+
+      - name: Setup PHP, with composer and extensions
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php-version }}
+          coverage: pcov
+          ini-values: memory_limit=-1
+          tools: composer:v2
+
+      - name: Cache dependencies
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.composer/cache
+            vendor
+          key: php-${{ matrix.php-version }}
+          restore-keys: php-${{ matrix.php-version }}
+
+      - name: Install Composer Dependencies
+        run: composer install --no-interaction --no-progress --ansi
+
+      - name: Running Psalm
+        run: vendor/bin/psalm --shepherd --stats
