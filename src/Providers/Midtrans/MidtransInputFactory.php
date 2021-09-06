@@ -7,15 +7,17 @@ namespace Ziswapp\Payment\Providers\Midtrans;
 use Ziswapp\Payment\Enum\CStore;
 use Ziswapp\Payment\Enum\EWallet;
 use Ziswapp\Payment\Enum\VirtualAccount;
+use Ziswapp\Payment\Input\ChargeCardInput;
 use Ziswapp\Payment\ValueObject\Transaction;
 use Ziswapp\Payment\Contracts\InputInterface;
 use Ziswapp\Payment\Input\CStoreTransactionInput;
 use Ziswapp\Payment\Input\EWalletTransactionInput;
+use Ziswapp\Payment\Contracts\CardInputFactoryInterface;
 use Ziswapp\Payment\Input\VirtualAccountTransactionInput;
 use Ziswapp\Payment\Contracts\PaymentInputFactoryInterface;
 use Ziswapp\Payment\Providers\Midtrans\Concerns\InputRequestBody;
 
-final class MidtransInputFactory implements InputInterface, PaymentInputFactoryInterface
+final class MidtransInputFactory implements InputInterface, PaymentInputFactoryInterface, CardInputFactoryInterface
 {
     use InputRequestBody;
 
@@ -36,7 +38,7 @@ final class MidtransInputFactory implements InputInterface, PaymentInputFactoryI
     {
         $this->setTransaction($input->getTransaction());
 
-        $this->params = array_merge($this->defaultParams(), [
+        $this->params = \array_merge($this->defaultParams(), [
             'payment_type' => 'cstore',
             'cstore' => [
                 'store' => CStore::midtransCode(
@@ -54,7 +56,7 @@ final class MidtransInputFactory implements InputInterface, PaymentInputFactoryI
         $this->setTransaction($input->getTransaction());
 
         if ($input->getAccount()->getProviderCode() === VirtualAccount::MANDIRI()) {
-            $this->params = array_merge($this->defaultParams(), [
+            $this->params = \array_merge($this->defaultParams(), [
                 'payment_type' => 'echannel',
                 'echannel' => [
                     'bill_info1' => \sprintf('Payment for transaction %s', $input->getTransaction()->getId()),
@@ -62,7 +64,7 @@ final class MidtransInputFactory implements InputInterface, PaymentInputFactoryI
                 ],
             ]);
         } else {
-            $this->params = array_merge($this->defaultParams(), [
+            $this->params = \array_merge($this->defaultParams(), [
                 'bank_transfer' => [
                     'bank' => VirtualAccount::midtransCode(
                         $input->getAccount()->getProviderCode()
@@ -80,7 +82,7 @@ final class MidtransInputFactory implements InputInterface, PaymentInputFactoryI
     {
         $this->setTransaction($input->getTransaction());
 
-        $this->params = array_merge($this->defaultParams(), [
+        $this->params = \array_merge($this->defaultParams(), [
             'payment_type' => EWallet::midtransCode(
                 $input->getWallet()->getProviderCode()
             ),
@@ -93,6 +95,23 @@ final class MidtransInputFactory implements InputInterface, PaymentInputFactoryI
             ],
             'shopeepay' => [
                 'callback_url' => $input->getWallet()->getSuccessUrl(),
+            ],
+        ]);
+
+        return $this;
+    }
+
+    public function fromChargeInput(ChargeCardInput $input): self
+    {
+        $this->setTransaction($input->getTransaction());
+
+        $this->params = \array_merge($this->defaultParams(), [
+            'payment_type' => 'credit_card',
+            'credit_card' => [
+                'token_id' => $input->getToken(),
+                'authentication' => $input->isAuthentication(),
+                'save_token_id' => $input->isSavedToken(),
+                'bins' => $input->getAllowedBins(),
             ],
         ]);
 

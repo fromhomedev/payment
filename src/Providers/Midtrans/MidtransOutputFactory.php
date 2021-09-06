@@ -4,15 +4,18 @@ declare(strict_types=1);
 
 namespace Ziswapp\Payment\Providers\Midtrans;
 
+use DateTime;
 use Psl\Type;
 use Ziswapp\Payment\Output\CStoreOutput;
 use Ziswapp\Payment\Output\EWalletOutput;
+use Ziswapp\Payment\Output\ChargeCardOutput;
 use Ziswapp\Payment\Output\CheckStatusOutput;
 use Ziswapp\Payment\Output\CardBinFilterOutput;
 use Ziswapp\Payment\Output\VirtualAccountOutput;
 use Ziswapp\Payment\Contracts\OutputFactoryInterface;
+use Ziswapp\Payment\Contracts\CardOutputFactoryInterface;
 
-final class MidtransOutputFactory implements OutputFactoryInterface
+final class MidtransOutputFactory implements OutputFactoryInterface, CardOutputFactoryInterface
 {
     private function __construct()
     {
@@ -155,10 +158,37 @@ final class MidtransOutputFactory implements OutputFactoryInterface
     public function fromFilterBinArray(array $data): CardBinFilterOutput
     {
         $data = Type\shape([
-            'bin' => Type\non_empty_string(),
-            'bin_type' => Type\non_empty_string(),
-        ], true)->coerce($data['data']);
+            'data' => Type\shape([
+                'bin' => Type\non_empty_string(),
+                'bin_type' => Type\non_empty_string(),
+            ], true),
+        ])->coerce($data);
 
-        return CardBinFilterOutput::create($data['bin'], $data['bin_type'], $data);
+        return CardBinFilterOutput::create($data['data']['bin'], $data['data']['bin_type'], $data['data']);
+    }
+
+    public function fromChargeArray(array $data): ChargeCardOutput
+    {
+        $data = Type\shape([
+            'transaction_id' => Type\non_empty_string(),
+            'order_id' => Type\non_empty_string(),
+            'redirect_url' => Type\optional(Type\nullable(Type\string())),
+            'gross_amount' => Type\non_empty_string(),
+            'fraud_status' => Type\non_empty_string(),
+            'transaction_status' => Type\non_empty_string(),
+            'transaction_time' => Type\non_empty_string(),
+        ], true)->coerce($data);
+
+        /** @noinspection PhpUnhandledExceptionInspection */
+        return ChargeCardOutput::create(
+            $data['transaction_id'],
+            $data['order_id'],
+            $data['transaction_status'],
+            $data['fraud_status'],
+            (float) $data['gross_amount'],
+            new DateTime($data['transaction_time']),
+            $data['redirect_url'] ?? null,
+            $data
+        );
     }
 }

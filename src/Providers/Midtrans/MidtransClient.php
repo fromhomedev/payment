@@ -4,8 +4,11 @@ declare(strict_types=1);
 
 namespace Ziswapp\Payment\Providers\Midtrans;
 
+use InvalidArgumentException;
 use Ziswapp\Payment\Output\CStoreOutput;
 use Ziswapp\Payment\Output\EWalletOutput;
+use Ziswapp\Payment\Input\ChargeCardInput;
+use Ziswapp\Payment\Output\ChargeCardOutput;
 use Ziswapp\Payment\Input\CardBinFilterInput;
 use Ziswapp\Payment\Output\CheckStatusOutput;
 use Ziswapp\Payment\Output\CardBinFilterOutput;
@@ -13,9 +16,12 @@ use Ziswapp\Payment\Exceptions\PaymentException;
 use Ziswapp\Payment\Output\VirtualAccountOutput;
 use Ziswapp\Payment\Input\CStoreTransactionInput;
 use Ziswapp\Payment\Input\EWalletTransactionInput;
+use Ziswapp\Payment\Contracts\CardPaymentInterface;
 use Ziswapp\Payment\Contracts\UtilOperationInterface;
 use Ziswapp\Payment\Input\CheckStatusTransactionInput;
+use Ziswapp\Payment\Contracts\CardInputFactoryInterface;
 use Ziswapp\Payment\Input\CancelPaymentTransactionInput;
+use Ziswapp\Payment\Contracts\CardOutputFactoryInterface;
 use Ziswapp\Payment\Input\VirtualAccountTransactionInput;
 use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
@@ -23,7 +29,7 @@ use Symfony\Contracts\HttpClient\Exception\DecodingExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
 
-final class MidtransClient extends Client implements UtilOperationInterface
+final class MidtransClient extends Client implements UtilOperationInterface, CardPaymentInterface
 {
     /**
      * @throws ClientExceptionInterface
@@ -145,5 +151,35 @@ final class MidtransClient extends Client implements UtilOperationInterface
         $data = $response->toArray();
 
         return $this->outputFactory->fromFilterBinArray($data);
+    }
+
+    /**
+     * @throws ClientExceptionInterface
+     * @throws DecodingExceptionInterface
+     * @throws RedirectionExceptionInterface
+     * @throws ServerExceptionInterface
+     * @throws TransportExceptionInterface
+     */
+    public function charge(ChargeCardInput $input): ChargeCardOutput
+    {
+        if (! $this->inputFactory instanceof CardInputFactoryInterface) {
+            throw new InvalidArgumentException(\sprintf('Input factory must be instance of `%s`', CardInputFactoryInterface::class));
+        }
+
+        $input = $this->inputFactory->fromChargeInput($input);
+
+        $response = $this->executeRequest('POST', '/v2/charge', $input->requestBody());
+
+        $data = $response->toArray();
+
+        if ((int) $data['status_code'] !== 200 && (int) $data['status_code'] !== 201) {
+            throw new PaymentException($response, (int) $data['status_code'], $data['status_message']);
+        }
+
+        if (! $this->outputFactory instanceof CardOutputFactoryInterface) {
+            throw new InvalidArgumentException(\sprintf('Output factory must be instance of `%s`', CardOutputFactoryInterface::class));
+        }
+
+        return $this->outputFactory->fromChargeArray($data);
     }
 }
