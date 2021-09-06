@@ -4,23 +4,26 @@ declare(strict_types=1);
 
 namespace Ziswapp\Payment\Providers\Midtrans;
 
-use Ziswapp\Payment\Input\CStoreInput;
-use Ziswapp\Payment\Input\EWalletInput;
 use Ziswapp\Payment\Output\CStoreOutput;
 use Ziswapp\Payment\Output\EWalletOutput;
-use Ziswapp\Payment\Input\CheckStatusInput;
-use Ziswapp\Payment\Input\CancelPaymentInput;
+use Ziswapp\Payment\Input\CardBinFilterInput;
 use Ziswapp\Payment\Output\CheckStatusOutput;
-use Ziswapp\Payment\Input\VirtualAccountInput;
+use Ziswapp\Payment\Output\CardBinFilterOutput;
 use Ziswapp\Payment\Exceptions\PaymentException;
 use Ziswapp\Payment\Output\VirtualAccountOutput;
+use Ziswapp\Payment\Input\CStoreTransactionInput;
+use Ziswapp\Payment\Input\EWalletTransactionInput;
+use Ziswapp\Payment\Contracts\UtilOperationInterface;
+use Ziswapp\Payment\Input\CheckStatusTransactionInput;
+use Ziswapp\Payment\Input\CancelPaymentTransactionInput;
+use Ziswapp\Payment\Input\VirtualAccountTransactionInput;
 use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\DecodingExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
 
-final class MidtransClient extends Client
+final class MidtransClient extends Client implements UtilOperationInterface
 {
     /**
      * @throws ClientExceptionInterface
@@ -29,7 +32,7 @@ final class MidtransClient extends Client
      * @throws ServerExceptionInterface
      * @throws TransportExceptionInterface
      */
-    public function createVirtualAccount(VirtualAccountInput $input): VirtualAccountOutput
+    public function createVirtualAccount(VirtualAccountTransactionInput $input): VirtualAccountOutput
     {
         $input = $this->inputFactory->fromVirtualAccountInput($input);
 
@@ -51,7 +54,7 @@ final class MidtransClient extends Client
      * @throws ServerExceptionInterface
      * @throws TransportExceptionInterface
      */
-    public function createEWallet(EWalletInput $input): EWalletOutput
+    public function createEWallet(EWalletTransactionInput $input): EWalletOutput
     {
         $input = $this->inputFactory->fromEWalletInput($input);
 
@@ -73,7 +76,7 @@ final class MidtransClient extends Client
      * @throws ServerExceptionInterface
      * @throws TransportExceptionInterface
      */
-    public function createConvenienceStore(CStoreInput $input): CStoreOutput
+    public function createConvenienceStore(CStoreTransactionInput $input): CStoreOutput
     {
         $input = $this->inputFactory->fromCStoreInput($input);
 
@@ -95,7 +98,7 @@ final class MidtransClient extends Client
      * @throws ServerExceptionInterface
      * @throws TransportExceptionInterface
      */
-    public function status(CheckStatusInput $input): CheckStatusOutput
+    public function status(CheckStatusTransactionInput $input): CheckStatusOutput
     {
         $response = $this->executeRequest('POST', \sprintf('/v2/%s/status', $input->getTransaction()->getId()));
 
@@ -115,7 +118,7 @@ final class MidtransClient extends Client
      * @throws ServerExceptionInterface
      * @throws TransportExceptionInterface
      */
-    public function cancel(CancelPaymentInput $input): CheckStatusOutput
+    public function cancel(CancelPaymentTransactionInput $input): CheckStatusOutput
     {
         $response = $this->executeRequest('POST', \sprintf('/v2/%s/cancel', $input->getTransaction()->getId()));
 
@@ -126,5 +129,21 @@ final class MidtransClient extends Client
         }
 
         return $this->outputFactory->fromStatusArray($data);
+    }
+
+    /**
+     * @throws ClientExceptionInterface
+     * @throws DecodingExceptionInterface
+     * @throws RedirectionExceptionInterface
+     * @throws ServerExceptionInterface
+     * @throws TransportExceptionInterface
+     */
+    public function binInfo(CardBinFilterInput $input): CardBinFilterOutput
+    {
+        $response = $this->executeRequest('GET', \sprintf('/v1/bins/%s', $input->getNumber()));
+
+        $data = $response->toArray();
+
+        return $this->outputFactory->fromFilterBinArray($data);
     }
 }

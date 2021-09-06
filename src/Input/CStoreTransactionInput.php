@@ -8,7 +8,7 @@ use Ziswapp\Payment\ValueObject\CStore;
 use Ziswapp\Payment\Enum\CStore as Enum;
 use Ziswapp\Payment\ValueObject\Transaction;
 
-final class CStoreInput extends Input
+final class CStoreTransactionInput extends TransactionInput
 {
     protected CStore $cStore;
 

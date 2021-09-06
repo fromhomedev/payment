@@ -6,12 +6,12 @@ namespace Ziswapp\Payment\Providers\Midtrans;
 
 use Ziswapp\Payment\Enum\CStore;
 use Ziswapp\Payment\Enum\EWallet;
-use Ziswapp\Payment\Input\CStoreInput;
-use Ziswapp\Payment\Input\EWalletInput;
 use Ziswapp\Payment\Enum\VirtualAccount;
 use Ziswapp\Payment\ValueObject\Transaction;
 use Ziswapp\Payment\Contracts\InputInterface;
-use Ziswapp\Payment\Input\VirtualAccountInput;
+use Ziswapp\Payment\Input\CStoreTransactionInput;
+use Ziswapp\Payment\Input\EWalletTransactionInput;
+use Ziswapp\Payment\Input\VirtualAccountTransactionInput;
 use Ziswapp\Payment\Contracts\PaymentInputFactoryInterface;
 use Ziswapp\Payment\Providers\Midtrans\Concerns\InputRequestBody;
 
@@ -32,7 +32,7 @@ final class MidtransInputFactory implements InputInterface, PaymentInputFactoryI
         return new self();
     }
 
-    public function fromCStoreInput(CStoreInput $input): self
+    public function fromCStoreInput(CStoreTransactionInput $input): self
     {
         $this->setTransaction($input->getTransaction());
 
@@ -49,7 +49,7 @@ final class MidtransInputFactory implements InputInterface, PaymentInputFactoryI
         return $this;
     }
 
-    public function fromVirtualAccountInput(VirtualAccountInput $input): self
+    public function fromVirtualAccountInput(VirtualAccountTransactionInput $input): self
     {
         $this->setTransaction($input->getTransaction());
 
@@ -76,7 +76,7 @@ final class MidtransInputFactory implements InputInterface, PaymentInputFactoryI
         return $this;
     }
 
-    public function fromEWalletInput(EWalletInput $input): self
+    public function fromEWalletInput(EWalletTransactionInput $input): self
     {
         $this->setTransaction($input->getTransaction());
 

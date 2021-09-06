@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace Ziswapp\Payment\Providers\Xendit;
 
 use Ziswapp\Payment\Enum\EWallet;
-use Ziswapp\Payment\Input\CStoreInput;
-use Ziswapp\Payment\Input\EWalletInput;
 use Ziswapp\Payment\Enum\VirtualAccount;
 use Ziswapp\Payment\Contracts\InputInterface;
-use Ziswapp\Payment\Input\VirtualAccountInput;
+use Ziswapp\Payment\Input\CStoreTransactionInput;
+use Ziswapp\Payment\Input\EWalletTransactionInput;
+use Ziswapp\Payment\Input\VirtualAccountTransactionInput;
 use Ziswapp\Payment\Contracts\PaymentInputFactoryInterface;
 
 final class XenditInputFactory implements InputInterface, PaymentInputFactoryInterface
@@ -25,7 +25,7 @@ final class XenditInputFactory implements InputInterface, PaymentInputFactoryInt
         return new self();
     }
 
-    public function fromCStoreInput(CStoreInput $input): self
+    public function fromCStoreInput(CStoreTransactionInput $input): self
     {
         $customer = $input->getTransaction()->getCustomer();
 
@@ -39,7 +39,7 @@ final class XenditInputFactory implements InputInterface, PaymentInputFactoryInt
         return $this;
     }
 
-    public function fromVirtualAccountInput(VirtualAccountInput $input): self
+    public function fromVirtualAccountInput(VirtualAccountTransactionInput $input): self
     {
         $customer = $input->getTransaction()->getCustomer();
 
@@ -57,7 +57,7 @@ final class XenditInputFactory implements InputInterface, PaymentInputFactoryInt
         return $this;
     }
 
-    public function fromEWalletInput(EWalletInput $input): self
+    public function fromEWalletInput(EWalletTransactionInput $input): self
     {
         $this->params = [
             'reference_id' => $input->getTransaction()->getId(),

@@ -6,23 +6,23 @@ namespace Ziswapp\Payment\Providers\Xendit;
 
 use Ziswapp\Payment\Enum\CStore;
 use Ziswapp\Payment\Enum\EWallet;
-use Ziswapp\Payment\Input\CStoreInput;
-use Ziswapp\Payment\Input\EWalletInput;
 use Ziswapp\Payment\Enum\VirtualAccount;
 use Ziswapp\Payment\Output\CStoreOutput;
 use Ziswapp\Payment\Output\EWalletOutput;
-use Ziswapp\Payment\Input\CheckStatusInput;
 use Symfony\Component\HttpClient\HttpClient;
-use Ziswapp\Payment\Input\CancelPaymentInput;
 use Ziswapp\Payment\Output\CheckStatusOutput;
-use Ziswapp\Payment\Input\VirtualAccountInput;
 use Ziswapp\Payment\Contracts\PaymentInterface;
 use Ziswapp\Payment\Output\VirtualAccountOutput;
+use Ziswapp\Payment\Input\CStoreTransactionInput;
+use Ziswapp\Payment\Input\EWalletTransactionInput;
 use Symfony\Contracts\HttpClient\ResponseInterface;
 use Ziswapp\Payment\Contracts\CredentialsInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Ziswapp\Payment\Contracts\OutputFactoryInterface;
+use Ziswapp\Payment\Input\CheckStatusTransactionInput;
 use Ziswapp\Payment\Contracts\PaymentOperationInterface;
+use Ziswapp\Payment\Input\CancelPaymentTransactionInput;
+use Ziswapp\Payment\Input\VirtualAccountTransactionInput;
 use Ziswapp\Payment\Contracts\PaymentInputFactoryInterface;
 use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
@@ -52,8 +52,7 @@ final class XenditClient implements PaymentInterface, PaymentOperationInterface
         ?PaymentInputFactoryInterface $inputFactory,
         ?OutputFactoryInterface $outputFactory,
         ?HttpClientInterface $httpClient = null
-    )
-    {
+    ) {
         $this->setConfigurations($configurations);
 
         $this->httpClient = $httpClient ?: HttpClient::createForBaseUri('https://api.xendit.co', [
@@ -82,7 +81,7 @@ final class XenditClient implements PaymentInterface, PaymentOperationInterface
      * @throws ServerExceptionInterface
      * @throws TransportExceptionInterface
      */
-    public function createVirtualAccount(VirtualAccountInput $input): VirtualAccountOutput
+    public function createVirtualAccount(VirtualAccountTransactionInput $input): VirtualAccountOutput
     {
         $input = $this->inputFactory->fromVirtualAccountInput($input);
 
@@ -100,7 +99,7 @@ final class XenditClient implements PaymentInterface, PaymentOperationInterface
      * @throws ServerExceptionInterface
      * @throws TransportExceptionInterface
      */
-    public function createEWallet(EWalletInput $input): EWalletOutput
+    public function createEWallet(EWalletTransactionInput $input): EWalletOutput
     {
         $input = $this->inputFactory->fromEWalletInput($input);
 
@@ -118,7 +117,7 @@ final class XenditClient implements PaymentInterface, PaymentOperationInterface
      * @throws ServerExceptionInterface
      * @throws TransportExceptionInterface
      */
-    public function createConvenienceStore(CStoreInput $input): CStoreOutput
+    public function createConvenienceStore(CStoreTransactionInput $input): CStoreOutput
     {
         $input = $this->inputFactory->fromCStoreInput($input);
 
@@ -135,8 +134,10 @@ final class XenditClient implements PaymentInterface, PaymentOperationInterface
      * @throws RedirectionExceptionInterface
      * @throws ServerExceptionInterface
      * @throws TransportExceptionInterface
+     *
+     * @psalm-suppress ParadoxicalCondition
      */
-    public function status(CheckStatusInput $input): CheckStatusOutput
+    public function status(CheckStatusTransactionInput $input): CheckStatusOutput
     {
         return match ($input->getProviderCode()) {
             EWallet::SHOPEEPAY(), EWallet::OVO(), EWallet::DANA(), EWallet::LINKAJA() => $this->statusEWallet($input),
@@ -154,10 +155,9 @@ final class XenditClient implements PaymentInterface, PaymentOperationInterface
      * @throws ServerExceptionInterface
      * @throws TransportExceptionInterface
      */
-    public function cancel(CancelPaymentInput $input): CheckStatusOutput
+    public function cancel(CancelPaymentTransactionInput $input): CheckStatusOutput
     {
         return match ($input->getProviderCode()) {
-            EWallet::SHOPEEPAY(), EWallet::OVO(), EWallet::DANA(), EWallet::LINKAJA() => throw new \RuntimeException('Cannot cancel eWallet transaction'),
             CStore::ALFAMART(), CStore::INDOMART() => $this->cancelConvenienceStore($input),
             VirtualAccount::BNI(), VirtualAccount::BNI_SYARIAH(), VirtualAccount::BCA(),
             VirtualAccount::BRI(), VirtualAccount::MANDIRI(), VirtualAccount::PERMATA() => $this->cancelVirtualAccount($input),
@@ -196,7 +196,7 @@ final class XenditClient implements PaymentInterface, PaymentOperationInterface
      * @throws ServerExceptionInterface
      * @throws TransportExceptionInterface
      */
-    private function statusEWallet(CheckStatusInput $input): CheckStatusOutput
+    private function statusEWallet(CheckStatusTransactionInput $input): CheckStatusOutput
     {
         $response = $this->executeRequest('GET', '/ewallets/charges/' . $input->getTransaction()->getId());
 
@@ -212,7 +212,7 @@ final class XenditClient implements PaymentInterface, PaymentOperationInterface
      * @throws ServerExceptionInterface
      * @throws TransportExceptionInterface
      */
-    private function statusVirtualAccount(CheckStatusInput $input): CheckStatusOutput
+    private function statusVirtualAccount(CheckStatusTransactionInput $input): CheckStatusOutput
     {
         $response = $this->executeRequest('GET', '/callback_virtual_accounts/' . $input->getTransaction()->getId());
 
@@ -228,7 +228,7 @@ final class XenditClient implements PaymentInterface, PaymentOperationInterface
      * @throws ServerExceptionInterface
      * @throws TransportExceptionInterface
      */
-    private function statusConvenienceStore(CheckStatusInput $input): CheckStatusOutput
+    private function statusConvenienceStore(CheckStatusTransactionInput $input): CheckStatusOutput
     {
         $response = $this->executeRequest('GET', '/fixed_payment_code/' . $input->getTransaction()->getId());
 
@@ -244,7 +244,7 @@ final class XenditClient implements PaymentInterface, PaymentOperationInterface
      * @throws ServerExceptionInterface
      * @throws TransportExceptionInterface
      */
-    private function cancelVirtualAccount(CancelPaymentInput $input): CheckStatusOutput
+    private function cancelVirtualAccount(CancelPaymentTransactionInput $input): CheckStatusOutput
     {
         $response = $this->executeRequest('PATCH', '/callback_virtual_accounts/' . $input->getTransaction()->getId(), [], [
             'expiration_date' => '1970-01-01T00:00:00Z',
@@ -262,7 +262,7 @@ final class XenditClient implements PaymentInterface, PaymentOperationInterface
      * @throws ServerExceptionInterface
      * @throws TransportExceptionInterface
      */
-    private function cancelConvenienceStore(CancelPaymentInput $input): CheckStatusOutput
+    private function cancelConvenienceStore(CancelPaymentTransactionInput $input): CheckStatusOutput
     {
         $response = $this->executeRequest('PATCH', '/fixed_payment_code/' . $input->getTransaction()->getId(), [], [
             'expiration_date' => '1970-01-01T00:00:00Z',

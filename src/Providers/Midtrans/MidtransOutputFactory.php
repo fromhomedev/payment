@@ -8,6 +8,7 @@ use Psl\Type;
 use Ziswapp\Payment\Output\CStoreOutput;
 use Ziswapp\Payment\Output\EWalletOutput;
 use Ziswapp\Payment\Output\CheckStatusOutput;
+use Ziswapp\Payment\Output\CardBinFilterOutput;
 use Ziswapp\Payment\Output\VirtualAccountOutput;
 use Ziswapp\Payment\Contracts\OutputFactoryInterface;
 
@@ -149,5 +150,15 @@ final class MidtransOutputFactory implements OutputFactoryInterface
             $mobileUrl,
             $data
         );
+    }
+
+    public function fromFilterBinArray(array $data): CardBinFilterOutput
+    {
+        $data = Type\shape([
+            'bin' => Type\non_empty_string(),
+            'bin_type' => Type\non_empty_string(),
+        ], true)->coerce($data['data']);
+
+        return CardBinFilterOutput::create($data['bin'], $data['bin_type'], $data);
     }
 }

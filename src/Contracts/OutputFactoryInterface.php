@@ -7,6 +7,7 @@ namespace Ziswapp\Payment\Contracts;
 use Ziswapp\Payment\Output\CStoreOutput;
 use Ziswapp\Payment\Output\EWalletOutput;
 use Ziswapp\Payment\Output\CheckStatusOutput;
+use Ziswapp\Payment\Output\CardBinFilterOutput;
 use Ziswapp\Payment\Output\VirtualAccountOutput;
 
 interface OutputFactoryInterface
@@ -18,4 +19,6 @@ interface OutputFactoryInterface
     public function fromCStoreArray(array $data): CStoreOutput;
 
     public function fromEWalletArray(array $data): EWalletOutput;
+
+    public function fromFilterBinArray(array $data): CardBinFilterOutput;
 }

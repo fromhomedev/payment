@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Ziswapp\Payment\Output;
 
-final class CheckStatusOutput extends Output
+final class CheckStatusOutput extends TransactionOutput
 {
     public static function create(string $transactionId, string $status, array $originalOutput = []): self
     {

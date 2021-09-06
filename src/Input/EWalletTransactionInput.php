@@ -8,7 +8,7 @@ use Ziswapp\Payment\ValueObject\EWallet;
 use Ziswapp\Payment\Enum\EWallet as Enum;
 use Ziswapp\Payment\ValueObject\Transaction;
 
-final class EWalletInput extends Input
+final class EWalletTransactionInput extends TransactionInput
 {
     protected EWallet $wallet;
 

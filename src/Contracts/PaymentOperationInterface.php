@@ -4,18 +4,18 @@ declare(strict_types=1);
 
 namespace Ziswapp\Payment\Contracts;
 
-use Ziswapp\Payment\Input\CheckStatusInput;
-use Ziswapp\Payment\Input\CancelPaymentInput;
+use Ziswapp\Payment\Input\CheckStatusTransactionInput;
+use Ziswapp\Payment\Input\CancelPaymentTransactionInput;
 
 interface PaymentOperationInterface
 {
     /**
      * @return mixed
      */
-    public function status(CheckStatusInput $input);
+    public function status(CheckStatusTransactionInput $input);
 
     /**
      * @return mixed
      */
-    public function cancel(CancelPaymentInput $input);
+    public function cancel(CancelPaymentTransactionInput $input);
 }
