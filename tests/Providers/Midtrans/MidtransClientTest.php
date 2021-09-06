@@ -10,6 +10,7 @@ use Ziswapp\Payment\Credentials;
 use Ziswapp\Payment\ValueObject\CStore;
 use Ziswapp\Payment\ValueObject\EWallet;
 use Ziswapp\Payment\ValueObject\Customer;
+use Ziswapp\Payment\Input\ChargeCardInput;
 use Ziswapp\Payment\ValueObject\Transaction;
 use Ziswapp\Payment\Input\CardBinFilterInput;
 use Ziswapp\Payment\Providers\Midtrans\Client;
@@ -641,6 +642,92 @@ JSON;
 
         $this->assertSame('CREDIT', $output->getType());
         $this->assertSame('455633', $output->getNumber());
+    }
+
+    public function testCanChargeCardPayment(): void
+    {
+        $json = <<<JSON
+{
+    "status_code": "201",
+    "status_message": "Success, Credit Card transaction is successful",
+    "transaction_id": "0bb563a9-ebea-41f7-ae9f-d99ec5f9700a",
+    "order_id": "order102",
+    "redirect_url": "https://api.sandbox.veritrans.co.id/v2/token/rba/redirect/481111-1114-0bb563a9-ebea-41f7-ae9f-d99ec5f9700a",
+    "gross_amount": "789000.00",
+    "currency": "IDR",
+    "payment_type": "credit_card",
+    "transaction_time": "2019-08-27 15:50:54",
+    "transaction_status": "pending",
+    "fraud_status": "accept",
+    "masked_card": "481111-1114",
+    "bank": "bni",
+    "card_type": "credit"
+}
+JSON;
+        $httpClient = new MockHttpClient([
+            new MockResponse($json),
+        ], Client::SANDBOX_URL);
+
+        $credentials = new Credentials(
+            (string) \getenv('SANDBOX_MIDTRANS_KEY'),
+            (string) \getenv('SANDBOX_MIDTRANS_SECRET'),
+        );
+
+        $client = new MidtransClient($credentials, [
+            'isProduction' => false,
+        ], null, null, $httpClient);
+
+        $transaction = $this->makeStubTransaction();
+
+        $input = new ChargeCardInput($transaction, 'some-token-here', true);
+
+        $output = $client->charge($input);
+
+        $this->assertSame('0bb563a9-ebea-41f7-ae9f-d99ec5f9700a', $output->getTransactionId());
+        $this->assertSame('order102', $output->getOrderId());
+        $this->assertSame('2019-08-27', $output->getTransactionDate()->format('Y-m-d'));
+        $this->assertSame('https://api.sandbox.veritrans.co.id/v2/token/rba/redirect/481111-1114-0bb563a9-ebea-41f7-ae9f-d99ec5f9700a', $output->getRedirectUrl());
+    }
+
+    public function testCanChargeCardPaymentWithRedirectUrlIsNotExists(): void
+    {
+        $json = <<<JSON
+{
+    "status_code": "201",
+    "status_message": "Success, Credit Card transaction is successful",
+    "transaction_id": "0bb563a9-ebea-41f7-ae9f-d99ec5f9700a",
+    "order_id": "order102",
+    "gross_amount": "789000.00",
+    "currency": "IDR",
+    "payment_type": "credit_card",
+    "transaction_time": "2019-08-27 15:50:54",
+    "transaction_status": "pending",
+    "fraud_status": "accept",
+    "masked_card": "481111-1114",
+    "bank": "bni",
+    "card_type": "credit"
+}
+JSON;
+        $httpClient = new MockHttpClient([
+            new MockResponse($json),
+        ], Client::SANDBOX_URL);
+
+        $credentials = new Credentials(
+            (string) \getenv('SANDBOX_MIDTRANS_KEY'),
+            (string) \getenv('SANDBOX_MIDTRANS_SECRET'),
+        );
+
+        $client = new MidtransClient($credentials, [
+            'isProduction' => false,
+        ], null, null, $httpClient);
+
+        $transaction = $this->makeStubTransaction();
+
+        $input = new ChargeCardInput($transaction, 'some-token-here', true);
+
+        $output = $client->charge($input);
+
+        $this->assertNull($output->getRedirectUrl());
     }
 
     protected function makeStubTransaction(): Transaction
