@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Ziswapp\Payment\Input;
+namespace FromHome\Payment\Input;
 
-use Ziswapp\Payment\ValueObject\Transaction;
-use Ziswapp\Payment\ValueObject\VirtualAccount;
-use Ziswapp\Payment\Enum\VirtualAccount as Enum;
+use FromHome\Payment\ValueObject\Transaction;
+use FromHome\Payment\ValueObject\VirtualAccount;
+use FromHome\Payment\Enum\VirtualAccount as Enum;
 
 final class VirtualAccountTransactionInput extends TransactionInput
 {

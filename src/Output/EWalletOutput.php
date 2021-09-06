@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Ziswapp\Payment\Output;
+namespace FromHome\Payment\Output;
 
 final class EWalletOutput extends TransactionOutput
 {

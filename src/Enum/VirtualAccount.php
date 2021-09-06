@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Ziswapp\Payment\Enum;
+namespace FromHome\Payment\Enum;
 
 use MyCLabs\Enum\Enum;
 

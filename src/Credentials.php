@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Ziswapp\Payment;
+namespace FromHome\Payment;
 
-use Ziswapp\Payment\Contracts\CredentialsInterface;
+use FromHome\Payment\Contracts\CredentialsInterface;
 
 final class Credentials implements CredentialsInterface
 {

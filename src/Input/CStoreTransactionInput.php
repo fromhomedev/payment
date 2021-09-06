@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Ziswapp\Payment\Input;
+namespace FromHome\Payment\Input;
 
-use Ziswapp\Payment\ValueObject\CStore;
-use Ziswapp\Payment\Enum\CStore as Enum;
-use Ziswapp\Payment\ValueObject\Transaction;
+use FromHome\Payment\ValueObject\CStore;
+use FromHome\Payment\Enum\CStore as Enum;
+use FromHome\Payment\ValueObject\Transaction;
 
 final class CStoreTransactionInput extends TransactionInput
 {

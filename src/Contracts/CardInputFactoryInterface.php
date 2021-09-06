@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Ziswapp\Payment\Contracts;
+namespace FromHome\Payment\Contracts;
 
-use Ziswapp\Payment\Input\ChargeCardInput;
+use FromHome\Payment\Input\ChargeCardInput;
 
 interface CardInputFactoryInterface extends InputInterface
 {

@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Ziswapp\Payment\Providers\Midtrans\Concerns;
+namespace FromHome\Payment\Providers\Midtrans\Concerns;
 
 use Webmozart\Assert\Assert;
-use Ziswapp\Payment\ValueObject\TransactionItem;
+use FromHome\Payment\ValueObject\TransactionItem;
 
 trait InputRequestBody
 {

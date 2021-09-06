@@ -19,21 +19,17 @@
     },
     "autoload": {
         "psr-4": {
-            "Ziswapp\\Payment\\": "src/"
+            "FromHome\\Payment\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Ziswapp\\Payment\\Tests\\": "tests/"
+            "FromHome\\Payment\\Tests\\": "tests/"
         }
     },
     "extra": {
         "branch-alias": {
             "dev-main": "1.0.x-dev"
-        },
-        "laravel": {
-            "providers": [
-            ]
         }
     },
     "scripts": {

@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace Ziswapp\Payment;
+namespace FromHome\Payment;
 
-use Ziswapp\Payment\Contracts\PaymentInterface;
-use Ziswapp\Payment\Providers\Xendit\XenditClient;
-use Ziswapp\Payment\Contracts\CredentialsInterface;
+use FromHome\Payment\Contracts\PaymentInterface;
+use FromHome\Payment\Providers\Xendit\XenditClient;
+use FromHome\Payment\Contracts\CredentialsInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
-use Ziswapp\Payment\Contracts\OutputFactoryInterface;
-use Ziswapp\Payment\Providers\Midtrans\MidtransClient;
-use Ziswapp\Payment\Providers\Midtrans\SnapMidtransClient;
-use Ziswapp\Payment\Contracts\PaymentInputFactoryInterface;
+use FromHome\Payment\Contracts\OutputFactoryInterface;
+use FromHome\Payment\Providers\Midtrans\MidtransClient;
+use FromHome\Payment\Providers\Midtrans\SnapMidtransClient;
+use FromHome\Payment\Contracts\PaymentInputFactoryInterface;
 
 final class PaymentFactory
 {

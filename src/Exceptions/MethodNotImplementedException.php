@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Ziswapp\Payment\Exceptions;
+namespace FromHome\Payment\Exceptions;
 
 use Exception;
 

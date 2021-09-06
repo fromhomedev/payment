@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Ziswapp\Payment\Input;
+namespace FromHome\Payment\Input;
 
 final class CardBinFilterInput
 {

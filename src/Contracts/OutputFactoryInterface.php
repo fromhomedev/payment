@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Ziswapp\Payment\Contracts;
+namespace FromHome\Payment\Contracts;
 
-use Ziswapp\Payment\Output\CStoreOutput;
-use Ziswapp\Payment\Output\EWalletOutput;
-use Ziswapp\Payment\Output\CheckStatusOutput;
-use Ziswapp\Payment\Output\CardBinFilterOutput;
-use Ziswapp\Payment\Output\VirtualAccountOutput;
+use FromHome\Payment\Output\CStoreOutput;
+use FromHome\Payment\Output\EWalletOutput;
+use FromHome\Payment\Output\CheckStatusOutput;
+use FromHome\Payment\Output\CardBinFilterOutput;
+use FromHome\Payment\Output\VirtualAccountOutput;
 
 interface OutputFactoryInterface
 {

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Ziswapp\Payment\ValueObject;
+namespace FromHome\Payment\ValueObject;
 
 use Psl\Type;
 

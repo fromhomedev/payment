@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Ziswapp\Payment\Contracts;
+namespace FromHome\Payment\Contracts;
 
-use Ziswapp\Payment\Output\ChargeCardOutput;
+use FromHome\Payment\Output\ChargeCardOutput;
 
 interface CardOutputFactoryInterface
 {

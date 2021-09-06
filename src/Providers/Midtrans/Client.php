@@ -2,17 +2,17 @@
 
 declare(strict_types=1);
 
-namespace Ziswapp\Payment\Providers\Midtrans;
+namespace FromHome\Payment\Providers\Midtrans;
 
 use Psl\Type;
 use Symfony\Component\HttpClient\HttpClient;
-use Ziswapp\Payment\Contracts\PaymentInterface;
+use FromHome\Payment\Contracts\PaymentInterface;
 use Symfony\Contracts\HttpClient\ResponseInterface;
-use Ziswapp\Payment\Contracts\CredentialsInterface;
+use FromHome\Payment\Contracts\CredentialsInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
-use Ziswapp\Payment\Contracts\OutputFactoryInterface;
-use Ziswapp\Payment\Contracts\PaymentOperationInterface;
-use Ziswapp\Payment\Contracts\PaymentInputFactoryInterface;
+use FromHome\Payment\Contracts\OutputFactoryInterface;
+use FromHome\Payment\Contracts\PaymentOperationInterface;
+use FromHome\Payment\Contracts\PaymentInputFactoryInterface;
 use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 
 abstract class Client implements PaymentInterface, PaymentOperationInterface

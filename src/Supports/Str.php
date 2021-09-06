@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Ziswapp\Payment\Supports;
+namespace FromHome\Payment\Supports;
 
 final class Str
 {

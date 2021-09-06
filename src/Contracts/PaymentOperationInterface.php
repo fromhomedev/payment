@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Ziswapp\Payment\Contracts;
+namespace FromHome\Payment\Contracts;
 
-use Ziswapp\Payment\Input\CheckStatusTransactionInput;
-use Ziswapp\Payment\Input\CancelPaymentTransactionInput;
+use FromHome\Payment\Input\CheckStatusTransactionInput;
+use FromHome\Payment\Input\CancelPaymentTransactionInput;
 
 interface PaymentOperationInterface
 {

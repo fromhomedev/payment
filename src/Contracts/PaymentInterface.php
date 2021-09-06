@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Ziswapp\Payment\Contracts;
+namespace FromHome\Payment\Contracts;
 
-use Ziswapp\Payment\Input\CStoreTransactionInput;
-use Ziswapp\Payment\Input\EWalletTransactionInput;
-use Ziswapp\Payment\Input\VirtualAccountTransactionInput;
+use FromHome\Payment\Input\CStoreTransactionInput;
+use FromHome\Payment\Input\EWalletTransactionInput;
+use FromHome\Payment\Input\VirtualAccountTransactionInput;
 
 interface PaymentInterface
 {

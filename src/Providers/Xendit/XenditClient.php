@@ -2,28 +2,28 @@
 
 declare(strict_types=1);
 
-namespace Ziswapp\Payment\Providers\Xendit;
+namespace FromHome\Payment\Providers\Xendit;
 
-use Ziswapp\Payment\Enum\CStore;
-use Ziswapp\Payment\Enum\EWallet;
-use Ziswapp\Payment\Enum\VirtualAccount;
-use Ziswapp\Payment\Output\CStoreOutput;
-use Ziswapp\Payment\Output\EWalletOutput;
+use FromHome\Payment\Enum\CStore;
+use FromHome\Payment\Enum\EWallet;
+use FromHome\Payment\Enum\VirtualAccount;
+use FromHome\Payment\Output\CStoreOutput;
+use FromHome\Payment\Output\EWalletOutput;
 use Symfony\Component\HttpClient\HttpClient;
-use Ziswapp\Payment\Output\CheckStatusOutput;
-use Ziswapp\Payment\Contracts\PaymentInterface;
-use Ziswapp\Payment\Output\VirtualAccountOutput;
-use Ziswapp\Payment\Input\CStoreTransactionInput;
-use Ziswapp\Payment\Input\EWalletTransactionInput;
+use FromHome\Payment\Output\CheckStatusOutput;
+use FromHome\Payment\Contracts\PaymentInterface;
+use FromHome\Payment\Output\VirtualAccountOutput;
+use FromHome\Payment\Input\CStoreTransactionInput;
+use FromHome\Payment\Input\EWalletTransactionInput;
 use Symfony\Contracts\HttpClient\ResponseInterface;
-use Ziswapp\Payment\Contracts\CredentialsInterface;
+use FromHome\Payment\Contracts\CredentialsInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
-use Ziswapp\Payment\Contracts\OutputFactoryInterface;
-use Ziswapp\Payment\Input\CheckStatusTransactionInput;
-use Ziswapp\Payment\Contracts\PaymentOperationInterface;
-use Ziswapp\Payment\Input\CancelPaymentTransactionInput;
-use Ziswapp\Payment\Input\VirtualAccountTransactionInput;
-use Ziswapp\Payment\Contracts\PaymentInputFactoryInterface;
+use FromHome\Payment\Contracts\OutputFactoryInterface;
+use FromHome\Payment\Input\CheckStatusTransactionInput;
+use FromHome\Payment\Contracts\PaymentOperationInterface;
+use FromHome\Payment\Input\CancelPaymentTransactionInput;
+use FromHome\Payment\Input\VirtualAccountTransactionInput;
+use FromHome\Payment\Contracts\PaymentInputFactoryInterface;
 use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\DecodingExceptionInterface;

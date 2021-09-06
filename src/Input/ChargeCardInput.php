@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Ziswapp\Payment\Input;
+namespace FromHome\Payment\Input;
 
-use Ziswapp\Payment\ValueObject\Transaction;
+use FromHome\Payment\ValueObject\Transaction;
 
 final class ChargeCardInput extends TransactionInput
 {

@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Ziswapp\Payment\Tests\Supports;
+namespace FromHome\Payment\Tests\Supports;
 
 use PHPUnit\Framework\TestCase;
-use Ziswapp\Payment\Supports\Str;
+use FromHome\Payment\Supports\Str;
 
 final class StrTest extends TestCase
 {

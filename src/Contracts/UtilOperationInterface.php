@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Ziswapp\Payment\Contracts;
+namespace FromHome\Payment\Contracts;
 
-use Ziswapp\Payment\Input\CardBinFilterInput;
+use FromHome\Payment\Input\CardBinFilterInput;
 
 interface UtilOperationInterface
 {
