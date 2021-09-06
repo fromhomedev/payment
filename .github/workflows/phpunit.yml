@@ -1,0 +1,50 @@
+name: Testing with PHPUnit
+on:
+  push:
+    branches:
+      - main
+  pull_request: null
+
+env:
+  SANDBOX_MIDTRANS_KEY: ${{ secrets.SANDBOX_MIDTRANS_KEY }}
+  SANDBOX_MIDTRANS_SECRET: ${{ secrets.SANDBOX_MIDTRANS_SECRET }}
+
+jobs:
+  phpunit:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        php-version: [ '8.0', '8.1' ]
+    steps:
+      - name: Running Github Checkout
+        uses: actions/checkout@v2
+
+      - name: Setup PHP, with composer and extensions
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php-version }}
+          coverage: pcov
+          ini-values: memory_limit=-1
+          tools: composer:v2
+
+      - name: Cache dependencies
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.composer/cache
+            vendor
+          key: php-${{ matrix.php-version }}
+          restore-keys: php-${{ matrix.php-version }}
+
+      - name: Install Composer Dependencies
+        run: composer update --no-interaction --no-progress --ansi
+        if: ${{ matrix.php-version == '^8.0' }}
+
+      - name: Install Composer Dependencies
+        run: composer update --no-interaction --no-progress --ansi --ignore-platform-req=php
+        if: ${{ matrix.php-version == '^8.1' }}
+
+      - name: Running PHPUnit
+        run: vendor/bin/phpunit
+
+
