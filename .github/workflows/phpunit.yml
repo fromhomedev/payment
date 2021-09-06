@@ -38,11 +38,11 @@ jobs:
 
       - name: Install Composer Dependencies
         run: composer update --no-interaction --no-progress --ansi
-        if: ${{ matrix.php-version == '^8.0' }}
+        if: ${{ matrix.php-version == '8.0' }}
 
       - name: Install Composer Dependencies
         run: composer update --no-interaction --no-progress --ansi --ignore-platform-req=php
-        if: ${{ matrix.php-version == '^8.1' }}
+        if: ${{ matrix.php-version == '8.1' }}
 
       - name: Running PHPUnit
         run: vendor/bin/phpunit
