@@ -8,16 +8,16 @@ use FromHome\Payment\ValueObject\Transaction;
 
 final class CheckStatusTransactionInput extends TransactionInput
 {
-    private string $providerCode;
+    private ?string $providerCode = null;
 
-    public function __construct(string $providerCode, Transaction $transaction)
+    public function __construct(Transaction $transaction, ?string $providerCode = null)
     {
         parent::__construct($transaction);
 
         $this->providerCode = $providerCode;
     }
 
-    public function getProviderCode(): string
+    public function getProviderCode(): ?string
     {
         return $this->providerCode;
     }
