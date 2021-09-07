@@ -50,6 +50,7 @@ final class MidtransClient extends Client implements UtilOperationInterface, Car
             throw new PaymentException($response, (int) $data['status_code'], $data['status_message']);
         }
 
+        /** @psalm-var VirtualAccountOutput */
         return $this->outputFactory->fromVirtualAccountArray($data);
     }
 
@@ -72,6 +73,7 @@ final class MidtransClient extends Client implements UtilOperationInterface, Car
             throw new PaymentException($response, (int) $data['status_code'], $data['status_message']);
         }
 
+        /** @psalm-var EWalletOutput */
         return $this->outputFactory->fromEWalletArray($data);
     }
 
@@ -94,6 +96,7 @@ final class MidtransClient extends Client implements UtilOperationInterface, Car
             throw new PaymentException($response, (int) $data['status_code'], $data['status_message']);
         }
 
+        /** @psalm-var CStoreOutput */
         return $this->outputFactory->fromCStoreArray($data);
     }
 
@@ -114,6 +117,7 @@ final class MidtransClient extends Client implements UtilOperationInterface, Car
             throw new PaymentException($response, (int) $data['status_code'], $data['status_message']);
         }
 
+        /** @psalm-var CheckStatusOutput */
         return $this->outputFactory->fromStatusArray($data);
     }
 
@@ -134,6 +138,7 @@ final class MidtransClient extends Client implements UtilOperationInterface, Car
             throw new PaymentException($response, (int) $data['status_code'], $data['status_message']);
         }
 
+        /** @psalm-var CheckStatusOutput */
         return $this->outputFactory->fromStatusArray($data);
     }
 
@@ -150,6 +155,7 @@ final class MidtransClient extends Client implements UtilOperationInterface, Car
 
         $data = $response->toArray();
 
+        /** @psalm-var CardBinFilterOutput */
         return $this->outputFactory->fromFilterBinArray($data);
     }
 

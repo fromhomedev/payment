@@ -4,28 +4,31 @@ declare(strict_types=1);
 
 namespace FromHome\Payment\Providers\Midtrans;
 
-use FromHome\Payment\Output\CStoreOutput;
-use FromHome\Payment\Output\EWalletOutput;
+use InvalidArgumentException;
 use FromHome\Payment\Output\CheckStatusOutput;
+use FromHome\Payment\Input\RedirectPaymentInput;
 use FromHome\Payment\Exceptions\PaymentException;
-use FromHome\Payment\Output\VirtualAccountOutput;
 use FromHome\Payment\Input\CStoreTransactionInput;
 use FromHome\Payment\Input\EWalletTransactionInput;
 use Symfony\Contracts\HttpClient\ResponseInterface;
 use FromHome\Payment\Contracts\CredentialsInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 use FromHome\Payment\Contracts\OutputFactoryInterface;
+use FromHome\Payment\Output\RedirectTransactionOutput;
 use FromHome\Payment\Input\CheckStatusTransactionInput;
+use FromHome\Payment\Contracts\RedirectPaymentInterface;
 use FromHome\Payment\Input\CancelPaymentTransactionInput;
 use FromHome\Payment\Input\VirtualAccountTransactionInput;
 use FromHome\Payment\Contracts\PaymentInputFactoryInterface;
+use FromHome\Payment\Contracts\RedirectInputFactoryInterface;
+use FromHome\Payment\Contracts\RedirectOutputFactoryInterface;
 use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\DecodingExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
 
-final class SnapMidtransClient extends Client
+final class SnapMidtransClient extends Client implements RedirectPaymentInterface
 {
     public const SANDBOX_URL = 'https://app.sandbox.midtrans.com';
 
@@ -54,9 +57,9 @@ final class SnapMidtransClient extends Client
      * @throws TransportExceptionInterface
      * @throws DecodingExceptionInterface
      */
-    public function createVirtualAccount(VirtualAccountTransactionInput $input): VirtualAccountOutput
+    public function createVirtualAccount(VirtualAccountTransactionInput $input): RedirectTransactionOutput
     {
-        $input = SnapMidtransInputFactory::create()->fromVirtualAccountInput($input);
+        $input = $this->inputFactory->fromVirtualAccountInput($input);
 
         $response = $this->createTransaction($input->requestBody());
 
@@ -66,6 +69,7 @@ final class SnapMidtransClient extends Client
 
         $data = $response->toArray();
 
+        /** @psalm-var RedirectTransactionOutput */
         return $this->outputFactory->fromVirtualAccountArray($data);
     }
 
@@ -76,9 +80,9 @@ final class SnapMidtransClient extends Client
      * @throws TransportExceptionInterface
      * @throws DecodingExceptionInterface
      */
-    public function createEWallet(EWalletTransactionInput $input): EWalletOutput
+    public function createEWallet(EWalletTransactionInput $input): RedirectTransactionOutput
     {
-        $input = SnapMidtransInputFactory::create()->fromEWalletInput($input);
+        $input = $this->inputFactory->fromEWalletInput($input);
 
         $response = $this->createTransaction($input->requestBody());
 
@@ -88,6 +92,7 @@ final class SnapMidtransClient extends Client
 
         $data = $response->toArray();
 
+        /** @psalm-var RedirectTransactionOutput */
         return $this->outputFactory->fromEWalletArray($data);
     }
 
@@ -98,9 +103,9 @@ final class SnapMidtransClient extends Client
      * @throws TransportExceptionInterface
      * @throws DecodingExceptionInterface
      */
-    public function createConvenienceStore(CStoreTransactionInput $input): CStoreOutput
+    public function createConvenienceStore(CStoreTransactionInput $input): RedirectTransactionOutput
     {
-        $input = SnapMidtransInputFactory::create()->fromCStoreInput($input);
+        $input = $this->inputFactory->fromCStoreInput($input);
 
         $response = $this->createTransaction($input->requestBody());
 
@@ -110,6 +115,7 @@ final class SnapMidtransClient extends Client
 
         $data = $response->toArray();
 
+        /** @psalm-var RedirectTransactionOutput */
         return $this->outputFactory->fromCStoreArray($data);
     }
 
@@ -139,6 +145,37 @@ final class SnapMidtransClient extends Client
         $client = $this->makeMidtransClient();
 
         return $client->cancel($input);
+    }
+
+    /**
+     * @throws ClientExceptionInterface
+     * @throws DecodingExceptionInterface
+     * @throws RedirectionExceptionInterface
+     * @throws ServerExceptionInterface
+     * @throws TransportExceptionInterface
+     */
+    public function createUrl(RedirectPaymentInput $input): RedirectTransactionOutput
+    {
+        if (! $this->inputFactory instanceof RedirectInputFactoryInterface) {
+            throw new InvalidArgumentException(\sprintf('Input factory must be instance of `%s`', RedirectInputFactoryInterface::class));
+        }
+
+        $input = $this->inputFactory->fromRedirectInput($input);
+
+        $response = $this->createTransaction($input->requestBody());
+
+        if ($response->getStatusCode() !== 201) {
+            throw new PaymentException($response, $response->getStatusCode(), $response->getContent(false));
+        }
+
+        if (! $this->outputFactory instanceof RedirectOutputFactoryInterface) {
+            throw new InvalidArgumentException(\sprintf('Output factory must be instance of `%s`', RedirectOutputFactoryInterface::class));
+        }
+
+        $data = $response->toArray();
+
+        /** @psalm-var RedirectTransactionOutput */
+        return $this->outputFactory->fromRedirectArray($data);
     }
 
     /**

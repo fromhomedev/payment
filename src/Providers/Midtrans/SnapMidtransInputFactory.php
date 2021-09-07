@@ -8,13 +8,15 @@ use FromHome\Payment\Enum\CStore;
 use FromHome\Payment\Enum\VirtualAccount;
 use FromHome\Payment\ValueObject\Transaction;
 use FromHome\Payment\Contracts\InputInterface;
+use FromHome\Payment\Input\RedirectPaymentInput;
 use FromHome\Payment\Input\CStoreTransactionInput;
 use FromHome\Payment\Input\EWalletTransactionInput;
 use FromHome\Payment\Input\VirtualAccountTransactionInput;
 use FromHome\Payment\Contracts\PaymentInputFactoryInterface;
+use FromHome\Payment\Contracts\RedirectInputFactoryInterface;
 use FromHome\Payment\Providers\Midtrans\Concerns\InputRequestBody;
 
-final class SnapMidtransInputFactory implements InputInterface, PaymentInputFactoryInterface
+final class SnapMidtransInputFactory implements InputInterface, PaymentInputFactoryInterface, RedirectInputFactoryInterface
 {
     use InputRequestBody;
 
@@ -92,6 +94,35 @@ final class SnapMidtransInputFactory implements InputInterface, PaymentInputFact
             'gopay' => [
                 'enable_callback' => true,
                 'callback_url' => $input->getWallet()->getSuccessUrl(),
+            ],
+        ]);
+
+        return $this;
+    }
+
+    public function fromRedirectInput(RedirectPaymentInput $input): self
+    {
+        $this->setTransaction($input->getTransaction());
+
+        $this->params = array_merge($this->defaultParams(), [
+            'bca_va' => [
+                'va_number' => $input->getNumber(),
+            ],
+            'bni_va' => [
+                'va_number' => $input->getNumber(),
+            ],
+            'bri_va' => [
+                'va_number' => $input->getNumber(),
+            ],
+            'permata_va' => [
+                'va_number' => $input->getNumber(),
+            ],
+            'shopeepay' => [
+                'callback_url' => $input->getSuccessUrl(),
+            ],
+            'gopay' => [
+                'enable_callback' => true,
+                'callback_url' => $input->getSuccessUrl(),
             ],
         ]);
 

@@ -4,21 +4,30 @@ declare(strict_types=1);
 
 namespace FromHome\Payment\Contracts;
 
-use FromHome\Payment\Output\CStoreOutput;
-use FromHome\Payment\Output\EWalletOutput;
-use FromHome\Payment\Output\CheckStatusOutput;
-use FromHome\Payment\Output\CardBinFilterOutput;
-use FromHome\Payment\Output\VirtualAccountOutput;
-
 interface OutputFactoryInterface
 {
-    public function fromStatusArray(array $data): CheckStatusOutput;
+    /**
+     * @return mixed
+     */
+    public function fromStatusArray(array $data);
 
-    public function fromVirtualAccountArray(array $data): VirtualAccountOutput;
+    /**
+     * @return mixed
+     */
+    public function fromVirtualAccountArray(array $data);
 
-    public function fromCStoreArray(array $data): CStoreOutput;
+    /**
+     * @return mixed
+     */
+    public function fromCStoreArray(array $data);
 
-    public function fromEWalletArray(array $data): EWalletOutput;
+    /**
+     * @return mixed
+     */
+    public function fromEWalletArray(array $data);
 
-    public function fromFilterBinArray(array $data): CardBinFilterOutput;
+    /**
+     * @return mixed
+     */
+    public function fromFilterBinArray(array $data);
 }

@@ -89,6 +89,7 @@ final class XenditClient implements PaymentInterface, PaymentOperationInterface
 
         $data = $response->toArray();
 
+        /** @psalm-var VirtualAccountOutput */
         return $this->outputFactory->fromVirtualAccountArray($data);
     }
 
@@ -107,6 +108,7 @@ final class XenditClient implements PaymentInterface, PaymentOperationInterface
 
         $data = $response->toArray();
 
+        /** @psalm-var EWalletOutput */
         return $this->outputFactory->fromEWalletArray($data);
     }
 
@@ -125,6 +127,7 @@ final class XenditClient implements PaymentInterface, PaymentOperationInterface
 
         $data = $response->toArray();
 
+        /** @psalm-var CStoreOutput */
         return $this->outputFactory->fromCStoreArray($data);
     }
 
@@ -157,6 +160,7 @@ final class XenditClient implements PaymentInterface, PaymentOperationInterface
      */
     public function cancel(CancelPaymentTransactionInput $input): CheckStatusOutput
     {
+        /** @psalm-var CheckStatusOutput */
         return match ($input->getProviderCode()) {
             CStore::ALFAMART(), CStore::INDOMART() => $this->cancelConvenienceStore($input),
             VirtualAccount::BNI(), VirtualAccount::BNI_SYARIAH(), VirtualAccount::BCA(),
@@ -202,6 +206,7 @@ final class XenditClient implements PaymentInterface, PaymentOperationInterface
 
         $data = $response->toArray();
 
+        /** @psalm-var CheckStatusOutput */
         return $this->outputFactory->fromStatusArray($data);
     }
 
@@ -218,6 +223,7 @@ final class XenditClient implements PaymentInterface, PaymentOperationInterface
 
         $data = $response->toArray();
 
+        /** @psalm-var CheckStatusOutput */
         return $this->outputFactory->fromStatusArray($data);
     }
 
@@ -234,6 +240,7 @@ final class XenditClient implements PaymentInterface, PaymentOperationInterface
 
         $data = $response->toArray();
 
+        /** @psalm-var CheckStatusOutput */
         return $this->outputFactory->fromStatusArray($data);
     }
 
@@ -252,6 +259,7 @@ final class XenditClient implements PaymentInterface, PaymentOperationInterface
 
         $data = $response->toArray();
 
+        /** @psalm-var CheckStatusOutput */
         return $this->outputFactory->fromStatusArray($data);
     }
 
@@ -270,6 +278,7 @@ final class XenditClient implements PaymentInterface, PaymentOperationInterface
 
         $data = $response->toArray();
 
+        /** @psalm-var CheckStatusOutput */
         return $this->outputFactory->fromStatusArray($data);
     }
 }
